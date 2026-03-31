@@ -1,3 +1,5 @@
-# Programming-Black-Collaborative-Project
+# Programming Black collaborative project
 
-### See: [Assignment specification](https://github.com/stevenaeola/progblack_2526/blob/main/assignment_2/README.md)
+#### Members: Mark Watson, Elliot Sainsbury, and Ben Pennycook. 
+
+#### See: [Assignment specification](https://github.com/stevenaeola/progblack_2526/blob/main/assignment_2/README.md)
