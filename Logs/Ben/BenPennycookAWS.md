@@ -17,3 +17,4 @@ Long before beginning this project (2023) I began the IBM Full Stack Developer C
 
 > Add details on the course.
 
+![Markdown meme](MarkdownMeme.jpg)
