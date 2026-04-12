@@ -38,8 +38,37 @@ Regarding the second necessity, deploying a React app, I found many services cap
 
 So the decision was made, I would be using Amazon's Amplify service to deploy our project's app.  
 
+## Entry 2 - Be open to change.
 
-> Here's a meme:
+### Big changes
+
+After a group video call between Mark, Elliot, and I, we compared ideas and it gave us all direction. For the other guys, we had set out a general plan for the frontend and backend of our application. For me, I was able to plan how I'd deploy the app. Notably, how I would deploy the app now we had decided to add a backend. 
+
+Because of this change, I would no longer be able just simply deploy it with Amazon Amplify, and so I was sent back to the drawing board. The great part about collaboration is that we are challenged by our peers to create something even better than what we had originally planned. It was at this point where I gained an insight on how the other boys were doing, and I noticed that the UI looked incredible. We wanted a modern, minimalist look, and this was definitely achieved. 
+
+My other team members and I have made a group chat, which we communicate on almost daily. This has been very important for small communications in between our video calls. 
+  
+### Which service will we use? Part 2
+
+After some research, I have come to the conclusion that, while still using Amplify to deploy the frontend, I would use Lambda. According to Wikipedia:
+
+> AWS Lambda is an event-driven, serverless Function as a Service provided by Amazon as a part of Amazon Web Services. It is designed to enable developers to run code without provisioning or managing servers. It executes code in response to events and automatically manages the computing resources required by that code.
+
+What this means for our project, is that the React application will call the backend API which will be hosted on Amazon's Lambda serverless service. This is much more effective than the more popular EC2 service, as it requires less maintenance  than EC2, and has less risk of costing me money. 
 
 
-![Markdown meme](MarkdownMeme.jpg)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
