@@ -39,7 +39,7 @@ function Submit() {
 function SignUpLink() {
   return (
     <>
-     <p className="fs-5 my-2">Don't have an account? <a href="/signup">Sign Up</a></p>
+     <p className="fs-5 my-2">Don't have an account? <Link to="/signup">Sign Up</Link></p>
     </>
   );
 }

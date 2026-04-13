@@ -49,7 +49,7 @@ function Submit() {
 function LogInLink() {
   return (
     <>
-     <p className="fs-5 my-2">Already have an account? <a href="/">Log In</a></p>
+     <p className="fs-5 my-2">Already have an account? <Link to="/">Log In</Link></p>
     </>
   );
 }
