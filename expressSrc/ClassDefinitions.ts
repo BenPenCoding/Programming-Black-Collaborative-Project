@@ -1,3 +1,5 @@
+// need to implement validation
+
 export class User{
 
     private firstName: string;

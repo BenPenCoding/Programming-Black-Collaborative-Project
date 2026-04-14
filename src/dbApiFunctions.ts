@@ -1,8 +1,9 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { eq } from 'drizzle-orm';
-import { usersTable,expensesTable } from './db/schema.ts';
-import {User,Expense} from "../express/ClassDefinitions"
+import { usersTable,expensesTable } from './db/schema';
+import {User,Expense} from '../expressSrc/ClassDefinitions'
+import { error } from 'node:console';
   
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -19,7 +20,13 @@ async function AddUser(newUser: User){
 
   // reassingning the pk to the obj user
   const newUserRow = result[0]
-  newUser.setUserId(newUserRow.userID) 
+  if(!newUserRow){
+    throw error()
+  }
+  else{
+    newUser.setUserId(newUserRow.userID) 
+
+  }
   
 
 
@@ -38,7 +45,12 @@ async function AddExpense(newExpense:Expense){
 
   // reassining the pk to the obj expense
   const newExpenseRow = result[0];
-  newExpense.setExpenseId(newExpenseRow.expenseID)
+  if(!newExpenseRow){
+    throw error()
+  }
+  else{
+    newExpense.setExpenseId(newExpenseRow.expenseID)
+  }
 }
 
 AddUser(new User("Elliot","Sainsbury","zfdf79@durham.ac.uk","Dbpass"));

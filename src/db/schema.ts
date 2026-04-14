@@ -23,7 +23,6 @@ export const expensesTable = pgTable('expenses', {
   description: text('description').notNull(),
   cost:  numeric('cost').notNull()
   
-
 });
 
 
