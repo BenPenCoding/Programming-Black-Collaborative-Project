@@ -17,7 +17,8 @@
   
   "scripts": {
     "dev": "tsx src/main.ts",
-    "expressStart":  "tsx expressSrc/ExpressTest.ts"
+    "expressStart":  "tsx expressSrc/ExpressTest.ts",
+    "dbAPI" :  "tsx src/dbAPIFunctions.ts"
   },
   "type":"module"
    

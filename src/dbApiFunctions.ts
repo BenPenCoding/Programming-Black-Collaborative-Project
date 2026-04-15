@@ -7,7 +7,7 @@ import { error } from 'node:console';
   
 const db = drizzle(process.env.DATABASE_URL!);
 
-async function AddUser(newUser: User){
+export async function AddUser(newUser: User){
   const userEntry : typeof usersTable.$inferInsert = {
     firstName : newUser.getFirstName(),
     lastname : newUser.getLastName(),
@@ -28,11 +28,9 @@ async function AddUser(newUser: User){
 
   }
   
-
-
 }
 
-async function AddExpense(newExpense:Expense){
+export async function AddExpense(newExpense:Expense){
   const expenseEntry: typeof expensesTable.$inferInsert = {
     description : newExpense.getDescription(),
     userId: newExpense.getUserId(),
@@ -53,4 +51,28 @@ async function AddExpense(newExpense:Expense){
   }
 }
 
-AddUser(new User("Elliot","Sainsbury","zfdf79@durham.ac.uk","Dbpass"));
+
+export async function getUserRecord(userId: number ): Promise< typeof usersTable.$inferSelect | Error>{
+  const result =  await db.select().from(usersTable).where(eq(usersTable.userID,userId))
+  // returns array of  obj type
+  const userRow = result[0];
+  if(!userRow){
+    throw new Error("record not found")
+  }
+  else{
+    return userRow
+  }
+
+}
+
+export async function getExpenseRecord(expenseId: number): Promise<typeof expensesTable.$inferSelect | Error>{
+  const result = await db.select().from(expensesTable).where(eq(expensesTable.expenseID,expenseId));
+  const expenseRow = result[0];
+  if(!expenseRow){
+    throw new Error("record not found")
+  }
+  else{
+    return expenseRow
+  }
+
+}

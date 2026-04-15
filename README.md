@@ -6,3 +6,5 @@
 
 npx drizzle kit push = update schema
 npx tsx $filename = quick compile ts files
+
+look over error handling, regex,password encryption

@@ -11,7 +11,7 @@ export const usersTable = pgTable('users', {
   userID: integer('id').primaryKey().generatedAlwaysAsIdentity(),
   firstName: text('first_name').notNull(), // ts convention and sql convention 
   lastname: text('last_name').notNull(),
-  email: text('email').notNull().unique(),
+  email: text('email').notNull().unique(), 
   password: text('password').notNull()
 
 });
