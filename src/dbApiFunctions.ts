@@ -1,16 +1,17 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { eq } from 'drizzle-orm';
+import { eq,and } from 'drizzle-orm';
 import { usersTable,expensesTable } from './db/schema';
-import {User,Expense} from '../expressSrc/ClassDefinitions'
-import { error } from 'node:console';
+import {User,Expense,Income} from '../expressSrc/ClassDefinitions'
+
   
-const db = drizzle(process.env.DATABASE_URL!);
+export const db = drizzle(process.env.DATABASE_URL!);
 
 export async function AddUser(newUser: User){
   const userEntry : typeof usersTable.$inferInsert = {
+    username : newUser.getUserName(),
     firstName : newUser.getFirstName(),
-    lastname : newUser.getLastName(),
+    lastName : newUser.getLastName(),
     email : newUser.getEmail(),
     password : newUser.getPassword()
 
@@ -21,10 +22,10 @@ export async function AddUser(newUser: User){
   // reassingning the pk to the obj user
   const newUserRow = result[0]
   if(!newUserRow){
-    throw error()
+    throw new Error()
   }
   else{
-    newUser.setUserId(newUserRow.userID) 
+    newUser.setUserId(newUserRow.userId) 
 
   }
   
@@ -34,7 +35,7 @@ export async function AddExpense(newExpense:Expense){
   const expenseEntry: typeof expensesTable.$inferInsert = {
     description : newExpense.getDescription(),
     userId: newExpense.getUserId(),
-    expensesName : newExpense.getDescription(),
+    expenseName : newExpense.getDescription(),
     dateAdded : newExpense.getDateAdded(),
     cost : newExpense.getCost().toString()
   }
@@ -44,29 +45,32 @@ export async function AddExpense(newExpense:Expense){
   // reassining the pk to the obj expense
   const newExpenseRow = result[0];
   if(!newExpenseRow){
-    throw error()
+    throw new Error()
   }
   else{
-    newExpense.setExpenseId(newExpenseRow.expenseID)
+    newExpense.setExpenseId(newExpenseRow.expenseId)
   }
 }
 
 
-export async function getUserRecord(userId: number ): Promise< typeof usersTable.$inferSelect | Error>{
-  const result =  await db.select().from(usersTable).where(eq(usersTable.userID,userId))
+export async function getUserRecord(username: string,password : string ): Promise<  User  >{
+  const result =  await db.select().from(usersTable).where(and(eq(usersTable.username,username),eq(usersTable.password,password)))
   // returns array of  obj type
   const userRow = result[0];
+
   if(!userRow){
     throw new Error("record not found")
   }
   else{
-    return userRow
+    const user = new User(userRow.username,userRow.firstName,userRow.lastName,userRow.email,userRow.password);
+    user.setUserId(userRow.userId)
+    return user
   }
 
 }
 
 export async function getExpenseRecord(expenseId: number): Promise<typeof expensesTable.$inferSelect | Error>{
-  const result = await db.select().from(expensesTable).where(eq(expensesTable.expenseID,expenseId));
+  const result = await db.select().from(expensesTable).where(eq(expensesTable.expenseId,expenseId));
   const expenseRow = result[0];
   if(!expenseRow){
     throw new Error("record not found")

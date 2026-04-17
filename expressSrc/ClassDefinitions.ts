@@ -4,23 +4,18 @@ export class User{
 
     private firstName: string;
     private lastName: string;
+    private username: string;
     private email: string;
     private password: string;
     private userId: number; // primary key 
 
-    public constructor(firstName : string, lastName : string, email : string, password : string ){
+    public constructor(firstName : string , lastName : string,username:string, email : string, password : string ){
         this.firstName = firstName;
         this.lastName = lastName;
-        this.email = email;
+        this.username = username;
         this.password = password;
-        this.userId  = 0
-        if(this.validateEmail(email)){
-            this.email = email
-        }
-        else{
-            throw new Error("Error inputting email")
-        }
-        
+        this.userId  = 0;
+        this.email = email
 
     }   
 
@@ -30,6 +25,14 @@ export class User{
     public setFirstName(input: string){
         
         this.firstName = input;
+        
+    }
+    public getUserName() : string{
+        return this.username
+    }
+    public setUserName(input: string){
+        
+        this.username = input;
         
     }
     public getLastName() : string{
@@ -49,7 +52,7 @@ export class User{
         }
         
     }
-    public getPassword() : string{
+    public getPassword() : string{ 
         return this.password
     }
     public setPassword(input: string){
@@ -63,13 +66,19 @@ export class User{
 
         this.userId = newUserId 
     }
-    private validateEmail(inputEmail : string): boolean{ // dummy modules
-        return true 
+    private validateEmail(inputEmail : string): boolean{ // basic email validation
+        const regex : RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/
+        if(regex.test(inputEmail)){
+            return true 
+
+        }
+        return false
     }
 
 }
 
 export class Expense{
+    // might have to recurring part
     private expensesName: string;
     private cost: number;
     private dateAdded: Date;
@@ -127,5 +136,55 @@ export class Expense{
     }
 
 
+}
+
+export class Income{
+
+    private incomeName: string;
+    private incomeId: number;
+    private earning: number;
+    private userId: number;
+    private dateAdded: Date;
+
+    public constructor(name:string,incomeId: number,earning:number,userId:number,dateAdded:Date){
+        this.incomeName = name
+        this.incomeId = incomeId
+        this.earning = earning
+        this.userId = userId
+        this.dateAdded = dateAdded
+    }
+
+    public getIncomeName() : string{
+        return this.incomeName
+
+    }
+    public setIncomeName(newName:string){
+        this.incomeName = newName
+    }
+    public getIncomeId() : number{
+        return this.incomeId
+    }
+    public setIncomeId(newIncomeId : number){
+         this.incomeId = newIncomeId
+    }
+    public getEarning() : number{
+        return this.earning
+    }
+    public setEarning(newEarning : number){
+        this.earning = newEarning
+
+    }
+    public getUserId() : number{
+        return this.userId
+    }
+    public setUserId(newUserId : number){
+        this.userId = newUserId
+    }
+    public getDateAdded() : Date{
+        return this.dateAdded
+    }
+    public setDateAdded(newDate: Date){
+        this.dateAdded = newDate
+    }
 }
 

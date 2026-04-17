@@ -1,1 +1,3 @@
-console.log("Hello world");
+const newString = Math.random().toString()
+console.log(newString);
+console.log(newString.slice(2,))
