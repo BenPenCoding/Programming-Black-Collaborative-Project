@@ -21,5 +21,4 @@
     "dbAPI" :  "tsx src/dbAPIFunctions.ts"
   },
   "type":"module"
-   
 }
