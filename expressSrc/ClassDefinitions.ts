@@ -1,26 +1,29 @@
+// need to implement validation
+
 export class User{
 
     private firstName: string;
     private lastName: string;
     private email: string;
     private password: string;
-    private readonly userExpensesID: string; // prinary key 
+    private userId: number; // primary key 
 
     public constructor(firstName : string, lastName : string, email : string, password : string ){
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-        this.userExpensesID  = this.generatePrimaryKey(firstName,lastName)
+        this.userId  = 0
+        if(this.validateEmail(email)){
+            this.email = email
+        }
+        else{
+            throw new Error("Error inputting email")
+        }
+        
 
     }   
-    private generatePrimaryKey(firstName: string, lastName: string) : string{
-        
-        // search through database and see if there is an instance of the same name and create primary key accordingly
 
-        return firstName + lastName
-
-    }
     public getFirstName() : string{
         return this.firstName
     }
@@ -40,7 +43,10 @@ export class User{
         return this.email
     }
     public setEmail(input: string){
-        this.email = input;
+
+        if(this.validateEmail(input)){
+            this.email = input;
+        }
         
     }
     public getPassword() : string{
@@ -50,25 +56,34 @@ export class User{
         this.password = input;
         
     }
-    public getUserExpensesID() : string{
-        return this.userExpensesID
+    public getUserId() : Number{
+        return this.userId 
+    }
+    public setUserId(newUserId:number){
+
+        this.userId = newUserId 
+    }
+    private validateEmail(inputEmail : string): boolean{ // dummy modules
+        return true 
     }
 
 }
 
-export class Expenses{
+export class Expense{
     private expensesName: string;
     private cost: number;
     private dateAdded: Date;
     private description: string;
-    private readonly userExpensesID: string; // foreign key
+    private userId: number; // foreign key
+    private expenseId : number; //primary key
 
-    public constructor(expensesName: string, cost : number, dateAdded : Date, description : string, userExpensesID : string ){
+    public constructor(expensesName: string, cost : number, dateAdded : Date, description : string, userId : number ){
         this.expensesName = expensesName
         this.cost = cost
         this.dateAdded = dateAdded
         this.description = description
-        this.userExpensesID = userExpensesID
+        this.userId = userId
+        this.expenseId = 0
     }
     public getExpensesName() : string{
         return this.expensesName
@@ -98,10 +113,18 @@ export class Expenses{
         this.description = input;
         
     }
-    public getUserExpensesID() : string{
-        return this.userExpensesID
+    public getUserId() : number{
+        return this.userId
     }
-
+    public setUserId(newUserId: number){
+        this.userId = newUserId
+    }
+    public getExpenseId(): number{
+        return this.expenseId
+    }
+    public setExpenseId(newExpenseId:number){
+        this.expenseId = newExpenseId
+    }
 
 
 }
