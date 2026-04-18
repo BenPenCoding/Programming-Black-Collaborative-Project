@@ -17,12 +17,11 @@ export async function AddUser(newUser: User){
 
   };
   const result = await db.insert(usersTable).values(userEntry).returning();
-  console.log("New User created");
 
   // reassingning the pk to the obj user
   const newUserRow = result[0]
   if(!newUserRow){
-    throw new Error()
+    throw new Error("Cannot Add User")
   }
   else{
     newUser.setUserId(newUserRow.userId) 
@@ -45,7 +44,7 @@ export async function AddExpense(newExpense:Expense){
   // reassining the pk to the obj expense
   const newExpenseRow = result[0];
   if(!newExpenseRow){
-    throw new Error()
+    throw new Error("Cannot Add Expense")
   }
   else{
     newExpense.setExpenseId(newExpenseRow.expenseId)
@@ -59,7 +58,7 @@ export async function getUserRecord(username: string,password : string ): Promis
   const userRow = result[0];
 
   if(!userRow){
-    throw new Error("record not found")
+    throw new Error("User not in table")
   }
   else{
     const user = new User(userRow.username,userRow.firstName,userRow.lastName,userRow.email,userRow.password);
@@ -73,7 +72,7 @@ export async function getExpenseRecord(expenseId: number): Promise<typeof expens
   const result = await db.select().from(expensesTable).where(eq(expensesTable.expenseId,expenseId));
   const expenseRow = result[0];
   if(!expenseRow){
-    throw new Error("record not found")
+    throw new Error("Expense not in table ")
   }
   else{
     return expenseRow
