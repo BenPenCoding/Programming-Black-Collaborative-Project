@@ -7,4 +7,4 @@
 npx drizzle kit push = update schema
 npx tsx $filename = quick compile ts files
 
-look over error handling,password encryption
+look over password encryption, change caching to dict, write dbAPIFunctions,Jest test

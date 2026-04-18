@@ -59,7 +59,7 @@ export class User{
         this.password = input;
         
     }
-    public getUserId() : Number{
+    public getUserId() : number{
         return this.userId 
     }
     public setUserId(newUserId:number){
@@ -146,9 +146,9 @@ export class Income{
     private userId: number;
     private dateAdded: Date;
 
-    public constructor(name:string,incomeId: number,earning:number,userId:number,dateAdded:Date){
+    public constructor(name:string,earning:number,userId:number,dateAdded:Date){
         this.incomeName = name
-        this.incomeId = incomeId
+        this.incomeId = 0
         this.earning = earning
         this.userId = userId
         this.dateAdded = dateAdded

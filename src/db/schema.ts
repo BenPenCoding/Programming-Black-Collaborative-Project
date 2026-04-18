@@ -26,7 +26,7 @@ export const expensesTable = pgTable('expenses', {
   
 });
 
-export const incomeTable = pgTable('incomes',{
+export const incomesTable = pgTable('incomes',{
   userId: integer('user_id').references(() => usersTable.userId).notNull(),
   incomeName: text('expenses_name').notNull(), // ts convention and sql convention 
   incomeId: integer('id').primaryKey().generatedAlwaysAsIdentity(), 

@@ -1,3 +1,5 @@
-const newString = Math.random().toString()
-console.log(newString);
-console.log(JSON.stringify(newString))
+const map :  {[val : string] : number} = {}
+
+map["f"] = 5
+
+console.log((map["f"]))
