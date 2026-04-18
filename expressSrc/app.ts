@@ -49,7 +49,7 @@ app.get('/api/signup', (_req,_res) => {
 
 const errorHandler = (_err: Error, _req: Request, _res: Response, next: NextFunction) => {
   console.error(_err);
-  _res.status(500).json({ errors:  "Something went wrong"  });
+  _res.status(500).json({ "error":  "Internal Server Error"  });
 };
 
 
