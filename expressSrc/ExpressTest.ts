@@ -1,3 +1,3 @@
 const newString = Math.random().toString()
 console.log(newString);
-console.log(newString.slice(2,))
+console.log(JSON.stringify(newString))

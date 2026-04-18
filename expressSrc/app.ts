@@ -1,5 +1,6 @@
 // Import the express in typescript file
-import express from 'express';
+import express, {Request,Response,NextFunction} from 'express';
+
 import * as dbAPI from '../src/dbApiFunctions';
 import {User,Expense} from './ClassDefinitions';
 // Initialize the express engine
@@ -31,8 +32,8 @@ app.post('/api/login', async (_req , _res ) => {
         //
         const unParsedToken = Math.random().toString()
         token = unParsedToken.slice(2,)
-        const jsonToken = JSON.stringify(token)
-        _res.send(jsonToken).status(400)
+        
+        _res.status(200).json({token})
 
 
     }
@@ -45,7 +46,16 @@ app.get('/api/signup', (_req,_res) => {
 
 });
 
+
+const errorHandler = (_err: Error, _req: Request, _res: Response, next: NextFunction) => {
+  console.error(_err);
+  _res.status(500).json({ errors:  "Something went wrong"  });
+};
+
+
 // Server setup
+
+app.use(errorHandler)
 app.listen(port, () => {
     console.log(`TypeScript with Express 
          http://localhost:${port}/`);
