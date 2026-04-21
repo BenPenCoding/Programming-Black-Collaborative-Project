@@ -6,7 +6,7 @@ export class User{
     private lastName: string;
     private username: string;
     private email: string;
-    private password: string;
+    private password: string; // hashed 
     private userId: number; // primary key 
 
     public constructor(firstName : string , lastName : string,username:string, email : string, password : string ){

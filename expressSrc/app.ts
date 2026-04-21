@@ -28,7 +28,11 @@ app.post('/api/login', async (req , res, next ) => {
     const {username, password}  = req.body //  parsing request body
 
     try{
-        const cachedUser = await dbAPI.getUserRecord(username,password) ; //  checking to see if in the db
+        // Create a SHA-256 hash of a string
+        const hashPassword = crypto.createHash('sha256')
+        .update(password)
+        .digest('hex');
+        const cachedUser = await dbAPI.getUserRecord(username,hashPassword) ; //  checking to see if in the db
 
         // create an auth token
 

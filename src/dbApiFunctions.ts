@@ -3,6 +3,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { eq,and } from 'drizzle-orm';
 import { usersTable,expensesTable,incomesTable } from './db/schema';
 import {User,Expense,Income} from '../expressSrc/ClassDefinitions'
+import { Result } from 'pg'; //
 
   
 export const db = drizzle(process.env.DATABASE_URL!);
@@ -70,7 +71,9 @@ export async function AddIncome(newIncome: Income){
   }
 }
 
-export async function getUserRecord(username: string,password : string ): Promise<  User  >{
+
+// checks if a user exists using username,password as search queries
+export async function getUserRecord(username: string,password : string ): Promise<  User  >{ 
   // might have to change the userID each time it is called for caching purposes
 
   const result =  await db.select().from(usersTable).where(and(eq(usersTable.username,username),eq(usersTable.password,password)))
@@ -88,6 +91,7 @@ export async function getUserRecord(username: string,password : string ): Promis
 
 }
 
+// returns Expense obj from an expenseId
 export async function getExpenseRecord(expenseId: number): Promise< Expense >{
   const result = await db.select().from(expensesTable).where(eq(expensesTable.expenseId,expenseId));
   const expenseRow = result[0];
@@ -116,18 +120,51 @@ export async function getIncomeRecord(incomeId: number): Promise< Income >{
   }  
 
 }
+
+
+export async function getUsersExpenses(userId:number): Promise<Expense[]>{
+  const result = await db.select().from(expensesTable).where(eq(expensesTable.userId,userId))
+  if(result.length == 0){
+    throw new Error("")
+
+  }
+  else{
+    // Map result into expense class
+
+    const ExpenseClassResult = []
+    for(let i : number = 0; i < result.length;i++){
+      let expenseRow = result[i]
+      let expense = new Expense(expenseRow.expenseName,(expenseRow.cost as any) as  number ,expenseRow.dateAdded,expenseRow.description,expenseRow.userId) 
+      expense.setExpenseId(expenseRow.expenseId)
+      ExpenseClassResult.push(expense)
+    }
+    return ExpenseClassResult
+  }
+}
+export async function getUsersIncome(userId:number): Promise<Income[]>{
+  const result = await db.select().from(incomesTable).where(eq(incomesTable.userId,userId))
+  if(result.length == 0){
+    throw new Error("")
+
+  }
+  else{
+    // Map result into income class
+
+    const incomeClassResult = []
+    for(let i : number = 0; i < result.length;i++){
+      let incomeRow = result[i]
+      let income = new Income(incomeRow.incomeName,(incomeRow.earning as any ) as number,incomeRow.userId,incomeRow.dateAdded) 
+      income.setIncomeId(incomeRow.incomeId)
+      incomeClassResult.push(income)
+    }
+    return incomeClassResult
+  }
+}
+
+
+/*
 const user1 = new User("Elliot","Sainsbury","ejs","zfdf791@durham.ac.uk","DBPass")
 user1.setUserId(6)
 const expense1 = new Expense("Expense1",100,new Date(18,4,2026),"desciprtionfield",user1.getUserId())
 const income1 = new Income("income1",50,user1.getUserId(),new Date(18,4,2026))
-//AddUser(user1)
-//AddExpense(expense1)
-//AddIncome(income1)
-
-
-
-async function checkgetMethods() {
-  const newUser =  await getUserRecord(user1.getUserName(),user1.getPassword())
-  console.log(newUser.getUserId())
-};
-checkgetMethods();
+*/
