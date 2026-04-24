@@ -1,4 +1,4 @@
-import { pgTable, text, integer, timestamp,numeric } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, timestamp,numeric,boolean } from "drizzle-orm/pg-core";
 
 // look at foreign key on delete 
 
@@ -22,7 +22,9 @@ export const expensesTable = pgTable('expenses', {
   expenseName: text('expenses_name').notNull(), // ts convention and sql convention 
   dateAdded: timestamp('date_added').notNull(),
   description: text('description').notNull(),
-  cost:  numeric('cost').notNull()
+  cost:  numeric('cost').notNull(),
+  recurring: boolean('recurring').notNull(),
+  recurringFreq: integer('recurringFreq').notNull()
   
 });
 

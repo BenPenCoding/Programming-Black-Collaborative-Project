@@ -38,7 +38,10 @@ export async function AddExpense(newExpense:Expense){
     userId: newExpense.getUserId(),
     expenseName : newExpense.getDescription(),
     dateAdded : newExpense.getDateAdded(),
-    cost : newExpense.getCost().toString()
+    cost : newExpense.getCost().toString(),
+    recurring : newExpense.getRecurring(),
+    recurringFreq : newExpense.getRecurringFreq()
+
   }
   const result = await db.insert(expensesTable).values(expenseEntry).returning();
 
@@ -99,7 +102,7 @@ export async function getExpenseRecord(expenseId: number): Promise< Expense >{
     throw new Error("Expense not in table ")
   }
   else{
-    const expense = new Expense(expenseRow.expenseName,(expenseRow.cost as any) as  number ,expenseRow.dateAdded,expenseRow.description,expenseRow.userId) 
+    const expense = new Expense(expenseRow.expenseName,(expenseRow.cost as any) as  number ,expenseRow.dateAdded,expenseRow.description,expenseRow.userId,expenseRow.recurring,expenseRow.recurringFreq) 
     expense.setExpenseId(expenseRow.expenseId)
     return  expense 
   }
@@ -134,7 +137,7 @@ export async function getUsersExpenses(userId:number): Promise<Expense[]>{
     const ExpenseClassResult = []
     for(let i : number = 0; i < result.length;i++){
       let expenseRow = result[i]
-      let expense = new Expense(expenseRow.expenseName,(expenseRow.cost as any) as  number ,expenseRow.dateAdded,expenseRow.description,expenseRow.userId) 
+      let expense = new Expense(expenseRow.expenseName,(expenseRow.cost as any) as  number ,expenseRow.dateAdded,expenseRow.description,expenseRow.userId,expenseRow.recurring,expenseRow.recurringFreq) 
       expense.setExpenseId(expenseRow.expenseId)
       ExpenseClassResult.push(expense)
     }

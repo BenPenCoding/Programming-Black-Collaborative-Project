@@ -1,4 +1,4 @@
-// need to implement validation
+// 3 classes users,income,expenses
 
 export class User{
 
@@ -85,14 +85,23 @@ export class Expense{
     private description: string;
     private userId: number; // foreign key
     private expenseId : number; //primary key
+    private recurring : boolean
+    private recurringFreq: number; 
 
-    public constructor(expensesName: string, cost : number, dateAdded : Date, description : string, userId : number ){
+    public constructor(expensesName: string, cost : number, dateAdded : Date, description : string, userId : number,recurring: boolean,recurringFreq?: number ){
         this.expensesName = expensesName
         this.cost = cost
         this.dateAdded = dateAdded
         this.description = description
         this.userId = userId
         this.expenseId = 0
+        this.recurring = recurring
+        if(recurringFreq){
+            this.recurringFreq = recurringFreq
+        }
+        else{
+            this.recurringFreq = -1
+        }
     }
     public getExpensesName() : string{
         return this.expensesName
@@ -133,6 +142,18 @@ export class Expense{
     }
     public setExpenseId(newExpenseId:number){
         this.expenseId = newExpenseId
+    }
+    public getRecurring() : boolean{
+        return this.recurring
+    }
+    public setRecurring(newRecurring : boolean){
+        this.recurring = newRecurring
+    }
+    public getRecurringFreq() : number{
+        return this.recurringFreq
+    }
+    public setRecurringFreq(newRecurringFreq : number){
+        this.recurringFreq = newRecurringFreq
     }
 
 
