@@ -13,8 +13,6 @@ const app: express.Application = express();
 
 
 
-// Take a port 3000 for running server.
-const port: number = 3000;
 
 // middleware`
 app.use(express.json())
@@ -64,8 +62,4 @@ const errorHandler = (err: Error, req: Request, res: Response, next: NextFunctio
 
 app.use(errorHandler)
 
-
-app.listen(port, () => {
-    console.log(`TypeScript with Express 
-         http://localhost:${port}/`);
-});
+export default app

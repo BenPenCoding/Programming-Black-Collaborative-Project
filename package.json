@@ -8,17 +8,22 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
     "@types/node": "^25.6.0",
     "@types/pg": "^8.20.0",
+    "@types/supertest": "^7.2.0",
     "drizzle-kit": "^0.31.10",
+    "jest": "^30.3.0",
+    "supertest": "^7.2.2",
+    "ts-jest": "^29.4.9",
     "tsx": "^4.21.0",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.3"
   },
-  
   "scripts": {
     "dev": "tsx src/main.ts",
-    "expressStart":  "tsx expressSrc/ExpressTest.ts",
-    "dbAPI" :  "tsx src/dbAPIFunctions.ts"
+    "expressStart": "tsx expressSrc/ExpressTest.ts",
+    "dbAPI": "tsx src/dbAPIFunctions.ts",
+    "tests": "jest"
   },
-  "type":"module"
+  "type": "module"
 }
