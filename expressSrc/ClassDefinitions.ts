@@ -6,16 +6,18 @@ export class User{
     private lastName: string;
     private username: string;
     private email: string;
-    private password: string; // hashed 
+    private hashedPassword: string; // hashed 
     private userId: number; // primary key 
+    private salt : string
 
-    public constructor(firstName : string , lastName : string,username:string, email : string, password : string ){
+    public constructor(firstName : string , lastName : string,username:string, email : string, password : string,salt : string ){
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
-        this.password = password;
+        this.hashedPassword = password;
         this.userId  = 0;
         this.email = email
+        this.salt = salt
 
     }   
 
@@ -52,11 +54,11 @@ export class User{
         }
         
     }
-    public getPassword() : string{ 
-        return this.password
+    public getHashedPassword() : string{ 
+        return this.hashedPassword
     }
-    public setPassword(input: string){
-        this.password = input;
+    public setHashedPassword(input: string){
+        this.hashedPassword = input;
         
     }
     public getUserId() : number{
@@ -73,6 +75,12 @@ export class User{
 
         }
         return false
+    }
+    public getSalt() : string{
+        return this.salt
+    }
+    public setSalt(newSalt : string){
+        this.salt = newSalt
     }
 
 }

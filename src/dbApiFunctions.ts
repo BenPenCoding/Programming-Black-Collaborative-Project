@@ -3,10 +3,9 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { eq,and } from 'drizzle-orm';
 import { usersTable,expensesTable,incomesTable } from './db/schema';
 import {User,Expense,Income} from '../expressSrc/ClassDefinitions'
-import { Result } from 'pg'; //
 
   
-export const db = drizzle(process.env.DATABASE_URL!);
+const db = drizzle(process.env.DATABASE_URL!); // removed export as should only be used internally
 
 export async function AddUser(newUser: User){
   const userEntry : typeof usersTable.$inferInsert = {
@@ -14,7 +13,8 @@ export async function AddUser(newUser: User){
     firstName : newUser.getFirstName(),
     lastName : newUser.getLastName(),
     email : newUser.getEmail(),
-    password : newUser.getPassword()
+    hashedPassword : newUser.getHashedPassword(),
+    salt : newUser.getSalt()
 
   };
   const result = await db.insert(usersTable).values(userEntry).returning(); // returns obj usersTable with pk added
@@ -36,7 +36,7 @@ export async function AddExpense(newExpense:Expense){
   const expenseEntry: typeof expensesTable.$inferInsert = {
     description : newExpense.getDescription(),
     userId: newExpense.getUserId(),
-    expenseName : newExpense.getDescription(),
+    expenseName : newExpense.getExpensesName(),
     dateAdded : newExpense.getDateAdded(),
     cost : newExpense.getCost().toString(),
     recurring : newExpense.getRecurring(),
@@ -76,10 +76,10 @@ export async function AddIncome(newIncome: Income){
 
 
 // checks if a user exists using username,password as search queries
-export async function getUserRecord(username: string,password : string ): Promise<  User  >{ 
+export async function getUserRecord(username: string ): Promise<  User  >{ 
   // might have to change the userID each time it is called for caching purposes
 
-  const result =  await db.select().from(usersTable).where(and(eq(usersTable.username,username),eq(usersTable.password,password)))
+  const result =  await db.select().from(usersTable).where(and(eq(usersTable.username,username)))
   // returns array of  obj type
   const userRow = result[0];
 
@@ -87,7 +87,7 @@ export async function getUserRecord(username: string,password : string ): Promis
     throw new Error("User not in table")
   }
   else{
-    const user = new User(userRow.username,userRow.firstName,userRow.lastName,userRow.email,userRow.password);
+    const user = new User(userRow.username,userRow.firstName,userRow.lastName,userRow.email,userRow.hashedPassword,userRow.salt);
     user.setUserId(userRow.userId)
     return user
   }
@@ -144,7 +144,7 @@ export async function getUsersExpenses(userId:number): Promise<Expense[]>{
     return ExpenseClassResult
   }
 }
-export async function getUsersIncome(userId:number): Promise<Income[]>{
+export async function getUsersIncomes(userId:number): Promise<Income[]>{
   const result = await db.select().from(incomesTable).where(eq(incomesTable.userId,userId))
   if(result.length == 0){
     throw new Error("")
