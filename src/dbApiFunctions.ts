@@ -135,6 +135,7 @@ export async function getUsersExpenses(userId:number): Promise<Expense[]>{
     // Map result into expense class
 
     const ExpenseClassResult = []
+    console.log(result.length)
     for(let i : number = 0; i < result.length;i++){
       let expenseRow = result[i]
       let expense = new Expense(expenseRow.expenseName,(expenseRow.cost as any) as  number ,expenseRow.dateAdded,expenseRow.description,expenseRow.userId,expenseRow.recurring,expenseRow.recurringFreq) 

@@ -20,7 +20,7 @@ Request Body Parameters = {
 
 Example Successful Response = 
 {
-    "token" : "5489548953873409"
+    "token" : "9c44f7a6a7079bb85bf46a4496ae7b4ad095f7c3fce312cad82c57c4bd574769e4829872961c6ece74e34729bdacfb0752ef229bc3e23327dbcc76d643b1242b"
 }
 
 Example Unsuccessful Response = 

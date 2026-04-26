@@ -13,3 +13,5 @@ tsconfigfile root dir has been changed
 group files into backend and change correpsondeing file paths, add income recurring payments, look at jest config file
 
 // Look at reducing dbapi functions
+
+// testing, write up api documentation

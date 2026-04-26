@@ -12,7 +12,7 @@ const app: express.Application = express();
 
 
 
-function hashPassword(password : string) {
+export function hashPassword(password : string) {
   // Generate a random salt (16 bytes)
   const salt = crypto.randomBytes(16).toString('hex');
 
@@ -24,7 +24,7 @@ function hashPassword(password : string) {
 }
 
 
-function verifyPassword(password : string, salt : string, hash : string) {
+export function verifyPassword(password : string, salt : string, hash : string) {
   const hashedPassword = crypto.scryptSync(password, salt, 64).toString('hex');
   return hashedPassword === hash;
 }
@@ -42,7 +42,10 @@ to minimise requests.
 */
 const tokenDictionary : {[token:string] : User} = {}
 
-
+// hard coding auth token for testing
+const testingUser = new User("Elliot","Sainsbury","ejs","zfdf79@durham.ac.uk","800ad3e9ca7e4aacec36ebb92734e29d5958a401db5d678ab195aac27adfd89f4a9da0e8e8904be162a21a02a7260d2f912c6fe7206481ac10d0564ad78595b5","be39d374b4da7e7f3a01832f0e015a4f") 
+testingUser.setUserId(9)
+tokenDictionary["authTokenForTesting"] = testingUser
 
 // Post Functions
 app.post('/api/login', async (req , res, next ) => {
@@ -51,7 +54,7 @@ app.post('/api/login', async (req , res, next ) => {
     const {username, password}  = req.body //  parsing request body
       // check if username or password is empty
     if(!username || !password){
-        // client issue so do not send to genral error handler
+        // client issue so do not send to general error handler
         return res.status(400).json({error: "there is an empty field"})
         }
     try{
@@ -110,7 +113,8 @@ app.post("/api/addExpense" async (req,res,next) => {
 // GET functions
 app.get('/api/getUsersExpenses',async(req,res,next) =>{
 
-    const {token} = req.body
+    const token  = req.headers.token as string
+   
     if(!(token in tokenDictionary)){
         // check to see if it is in the logged in tokenDictionary
         return res.status(400).json({error : "Invalid Token"})

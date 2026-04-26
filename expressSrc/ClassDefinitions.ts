@@ -16,8 +16,13 @@ export class User{
         this.username = username;
         this.hashedPassword = password;
         this.userId  = 0;
-        this.email = email
         this.salt = salt
+        if(this.validateEmail(email)){
+            this.email = email
+        }
+        else{
+            throw new Error("Invalid Email")
+        }
 
     }   
 
@@ -69,7 +74,7 @@ export class User{
         this.userId = newUserId 
     }
     private validateEmail(inputEmail : string): boolean{ // basic email validation
-        const regex : RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/
+        const regex : RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
         if(regex.test(inputEmail)){
             return true 
 

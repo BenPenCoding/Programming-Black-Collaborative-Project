@@ -13,8 +13,8 @@ export const usersTable = pgTable('users', {
   firstName: text('first_name').notNull(), // ts convention and sql convention 
   lastName: text('last_name').notNull(),
   email: text('email').notNull().unique(), 
-  hashedPassword: text('password').notNull(),
-  salt: text('password').notNull()
+  hashedPassword: text('hashedPassword').notNull(),
+  salt: text('salt').notNull()
 
 });
 export const expensesTable = pgTable('expenses', {
