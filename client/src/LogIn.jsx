@@ -64,7 +64,7 @@ function LogIn() {
 
 function Username({username, setUsername}) {
   return (
-    <div className="form-group my-2">
+    <div className="form-group my-2 text-start">
         <label htmlFor="username" className="form-label">Username:</label>
         <input type="text" className="form-control" id="username" placeholder="Enter Username" value={username} onChange={(event) => setUsername(event.target.value)} />
     </div>
@@ -73,7 +73,7 @@ function Username({username, setUsername}) {
 
 function Password({password, setPassword}) {
   return (
-    <div className="form-group my-2">
+    <div className="form-group my-2 text-start">
      <label htmlFor="password" className="form-label">Password:</label>
      <input type="password" className="form-control" id="password" placeholder="Enter Password" value={password} onChange={(event) => setPassword(event.target.value)} />
     </div>
