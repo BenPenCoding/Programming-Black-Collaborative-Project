@@ -3,6 +3,10 @@ import app from "./app";
 import {verifyPassword} from "./app";
 import request from "supertest";
 
+
+
+// rewrite headers for tests
+
 /**
  * These tests take a long time to execute so I have add .skip(),remove this to test them properly
  * Also all the data i am using was created specifically for testing, and was deleted after I finished testing

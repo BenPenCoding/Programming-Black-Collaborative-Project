@@ -93,7 +93,7 @@ class cashFlow {
     
     
     protected name: string;
-    protected cashFlowInstance: number;
+    protected cashFlowInstance: string;
     protected dateAdded: Date;
     protected description: string;
     protected userId: number; // foreign key
@@ -101,7 +101,7 @@ class cashFlow {
     protected recurring : boolean
     protected recurringFreq: number;
     
-    public constructor(name: string, cashFlowInstance : number, dateAdded : Date, description : string, userId : number,recurring: boolean,recurringFreq?: number ){
+    public constructor(name: string, cashFlowInstance : string, dateAdded : Date, description : string, userId : number,recurring: boolean,recurringFreq?: number ){
         this.name = name
         this.cashFlowInstance = cashFlowInstance
         this.dateAdded = dateAdded
@@ -123,8 +123,20 @@ class cashFlow {
 export class Expense extends cashFlow{
     
 
-    public constructor(expensesName: string, cost : number, dateAdded : Date, description : string, userId : number,recurring: boolean,recurringFreq?: number ){
-        super(expensesName,cost,dateAdded,description,userId,recurring,recurringFreq)
+    public constructor({name, cost , dateAdded , description , userId,recurring,recurringFreq} :
+        {
+            name : string
+            cost : string
+            dateAdded : Date
+            description : string
+            userId : number
+            recurring : boolean
+            recurringFreq : number
+
+            
+        }
+    ){
+        super(name ,cost,dateAdded,description,userId,recurring,recurringFreq)
        
     }
     public getExpensesName() : string{
@@ -134,10 +146,10 @@ export class Expense extends cashFlow{
         this.name = input;
         
     }
-    public getCost() : number{
+    public getCost() : string{
         return this.cashFlowInstance
     }
-    public setCost(input: number){
+    public setCost(input: string){
         this.cashFlowInstance = input;
         
     }
@@ -187,7 +199,16 @@ export class Income extends cashFlow{
 
   
 
-    public constructor(name:string,earning:number,userId:number,dateAdded:Date,description : string,recurring : boolean,recurringFreq : number){
+    public constructor({name,earning,userId,dateAdded,description,recurring,recurringFreq} :
+        {
+            name:string,
+            earning:string,
+            userId:number,
+            dateAdded:Date,
+            description : string,
+            recurring : boolean,
+            recurringFreq : number}
+        ){
         super(name,earning,dateAdded,description,userId,recurring,recurringFreq)
     } 
 
@@ -204,10 +225,10 @@ export class Income extends cashFlow{
     public setIncomeId(newIncomeId : number){
          this.id = newIncomeId
     }
-    public getEarning() : number{
+    public getEarning() : string{
         return this.cashFlowInstance
     }
-    public setEarning(newEarning : number){
+    public setEarning(newEarning : string){
         this.cashFlowInstance = newEarning
 
     }

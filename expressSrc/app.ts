@@ -1,10 +1,12 @@
+
 // Import the express in typescript file
 import express, {Request,Response,NextFunction} from 'express'; //Request, Response,NextFunction used for error handling
 import * as crypto from 'crypto';
 import * as dbAPI from '../src/dbApiFunctions'; // functions for inserting data into neon db
-import {User,Expense} from './ClassDefinitions'; 
+import {User,Expense, Income} from './ClassDefinitions'; 
 import { date } from 'drizzle-orm/mysql-core';
 import { isNull } from 'drizzle-orm';
+import { stripTypeScriptTypes } from 'module';
 // Initialize the express engine
 
 
@@ -52,17 +54,20 @@ const testingUser = new User("Elliot","Sainsbury","ejs","zfdf79@durham.ac.uk","8
 testingUser.setUserId(9)
 tokenDictionary["authTokenForTesting"] = testingUser
 
+
+
 // Post Functions
 app.post('/api/login', async (req , res, next ) => {
 
-
-    const {username, password}  = req.body //  parsing request body
-      // check if username or password is empty
-    if(!username || !password){
-        // client issue so do not send to general error handler
-        return res.status(400).json({error: "there is an empty field"})
-        }
     try{
+
+        const {username, password}  = req.body //  parsing request body
+        // check if username or password is empty
+        if(!username || !password){
+            // client issue so do not send to general error handler
+            return res.status(400).json({error: "there is an empty field"})
+            }
+    
       
 
         const cachedUser = await dbAPI.getUserRecord(username) ; //  checking to see if in the db, userID updated  via return statement
@@ -80,17 +85,20 @@ app.post('/api/login', async (req , res, next ) => {
 
     }
     catch(error){
+
         next(error)
 
     }
 });
 app.post('/api/signUp', async (req,res,next) => {
-    const {firstName,lastName,username,email,password} = req.body
-    if(!firstName || !lastName || !username || !email || !password ){
-       
-        return res.status(400).json({error : " there is an empty field"})
-    }
     try{
+
+        const {firstName,lastName,username,email,password} = req.body
+        if(!firstName || !lastName || !username || !email || !password ){
+        
+            return res.status(400).json({error : " there is an empty field"})
+        }
+    
         const {salt,hash} = hashPassword(password)
 
         const newUser = new User(firstName,lastName,username,email,hash,salt)
@@ -108,24 +116,128 @@ app.post('/api/signUp', async (req,res,next) => {
         next(error)
     }
 });
-/*
-app.post("/api/addExpense" async (req,res,next) => {
+
+app.post('/api/updateExpense',async (req,res,next) => {
+    try{
+
+        const {expensesName,cost,dateAdded,description,userId,id,recurring,recurringFreq} = req.body
+        
+        const expense = await dbAPI.getExpenseRecord(id)
+        if(expense.getExpensesName() != expensesName && expensesName){
+            expense.setExpenseId(expensesName)
+        }
+        if(expense.getCost() != cost && cost){
+            expense.setCost(cost)
+        }
+        if(expense.getDateAdded() != dateAdded && dateAdded){
+            expense.setDateAdded(dateAdded)
+        }
+        if(expense.getDescription() != description && description){
+            expense.setDescription(description)
+        }
+        if(expense.getRecurring() != recurring && recurring != null){
+            expense.setRecurring(recurring)
+        }
+        if(expense.getRecurringFreq() != recurring && recurring){
+            expense.setRecurringFreq(recurringFreq)
+        }
+        await dbAPI.updateExpenseRecord(expense)
+
+        res.status(200).send({response : "succssfully updated expense"})
+
+    }
+    catch(error){
+        next(error)
+    }
+
 
 })
 
-*/
+app.post('/api/updateIncome',async (req,res,next) => {
+    try{
+        // write in api doc this order
+
+        const {incomeName,earning,userId,id,dateAdded,description,recurring,recurringFreq} = req.body
+        const income = await dbAPI.getIncomeRecord(id)
+        if(income.getIncomeName() != incomeName && incomeName){
+            income.setIncomeName(incomeName)
+        }
+        if(income.getEarning() != earning && earning){
+            income.setEarning(earning)
+        }
+        if(income.getDateAdded() != dateAdded && dateAdded){
+            income.setDateAdded(dateAdded)
+        }
+        if(income.getDescription() != description && description){
+            income.setDescription(description)
+        }
+        if(income.getRecurring() != recurring && recurring != null){
+            income.setRecurring(recurring)
+        }
+        if(income.getRecurringFreq() != recurring && recurring){
+            income.setRecurringFreq(recurringFreq)
+        }
+        await dbAPI.updateIncomeRecord(income)
+        res.status(200).send({response : "succssfully updated income"})
+
+
+    }
+    catch(error){
+        next(error)
+    }
+
+})
+
+app.post("/api/addExpense", async (req,res,next) => {
+    try{
+        const token = req.headers.token as string
+        if(!(token in tokenDictionary)){
+            res.status(400).json({error : "Invalid token"})
+        }
+
+        const newExpense = new Expense(req.body)
+        await dbAPI.AddExpense(newExpense)
+        res.status(200).send({response : "succssfully added expense"})
+
+
+    }
+    catch(error){
+        next(error)
+    }
+
+})
+
+app.post("/api/addIncome", async (req,res ,next) =>{
+    try{
+        const token = req.headers.token as string
+        if(!(token in tokenDictionary)){
+            res.status(400).json({error : "Invalid token"})
+        }
+
+
+        const newIncome = new Income(req.body)
+        await dbAPI.AddIncome(newIncome)
+        res.status(200).send({response : "succssfully added income"})
+
+
+    }
+    catch(error){
+        next(error)
+    }
+})
 
 // GET functions
 app.get('/api/getUsersExpenses',async(req,res,next) =>{
-
-    const token  = req.headers.token as string
-   
-    if(!(token in tokenDictionary)){
-        // check to see if it is in the logged in tokenDictionary
-        return res.status(400).json({error : "Invalid Token"})
-    }
-    const User = tokenDictionary[token];
     try{
+
+        const token  = req.headers.token as string
+    
+        if(!(token in tokenDictionary)){
+            // check to see if it is in the logged in tokenDictionary
+            return res.status(400).json({error : "Invalid Token"})
+        }
+        const User = tokenDictionary[token];
+    
         const ExpensesArr = await dbAPI.getUsersExpenses(User.getUserId())
         return res.status(200).json(ExpensesArr)
 
@@ -138,15 +250,16 @@ app.get('/api/getUsersExpenses',async(req,res,next) =>{
 
 })
 app.get('/api/getUsersIncomes',async(req,res,next) =>{
-
-    const token = req.headers.token as string 
-
-    if(!(token in tokenDictionary)){
-        // check to see if it is in the logged in tokenDictionary
-        return res.status(400).json({error : "Invalid Token"})
-    }
-    const User = tokenDictionary[token];
     try{
+
+        const token = req.headers.token as string 
+
+        if(!(token in tokenDictionary)){
+            // check to see if it is in the logged in tokenDictionary
+            return res.status(400).json({error : "Invalid Token"})
+        }
+        const User = tokenDictionary[token];
+        
         const IncomesArr = await dbAPI.getUsersIncomes(User.getUserId())
         return res.status(200).json(IncomesArr)
 
@@ -159,38 +272,7 @@ app.get('/api/getUsersIncomes',async(req,res,next) =>{
 
 })
 
-// change location
-app.post('/api/addExpense',async (req,res,next) => {
-    const token = req.headers.token as string
-    if(!(token in tokenDictionary)){
-        // check to see if it is in the logged in tokenDictionary
-        return res.status(400).json({error : "Invalid Token"})
-    }
-    const {expensesName,cost,dateAdded,description,userId,id,recurring,recurringFreq} = req.body
-    const Expense = await dbAPI.getExpenseRecord(id)
-    if(Expense.getExpensesName() != expensesName && expensesName){
-        Expense.setExpenseId(expensesName)
-    }
-    if(Expense.getCost() != cost && cost){
-        Expense.setCost(cost)
-    }
-    if(Expense.getDateAdded() != dateAdded && dateAdded){
-        Expense.setDateAdded(dateAdded)
-    }
-    if(Expense.getDescription() != description && description){
-        Expense.setDescription(description)
-    }
-    if(Expense.getRecurring() != recurring && recurring != null){
-        Expense.setRecurring(recurring)
-    }
-    if(Expense.getRecurringFreq() != recurring && recurring){
-        Expense.setRecurringFreq(recurringFreq)
-    }
-    
 
-
-
-})
 
 const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err);
