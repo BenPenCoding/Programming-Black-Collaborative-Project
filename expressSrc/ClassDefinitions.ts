@@ -7,7 +7,7 @@ export class User{
     private username: string;
     private email: string;
     private hashedPassword: string; // hashed 
-    private userId: number; // primary key 
+    private id: number; // primary key 
     private salt : string
 
     public constructor(firstName : string , lastName : string,username:string, email : string, password : string,salt : string ){
@@ -15,13 +15,13 @@ export class User{
         this.lastName = lastName;
         this.username = username;
         this.hashedPassword = password;
-        this.userId  = 0;
+        this.id  = 0;
         this.salt = salt
         if(this.validateEmail(email)){
             this.email = email
         }
         else{
-            throw new Error("Invalid Email")
+            throw new Error("invalid Email")
         }
 
     }   
@@ -67,11 +67,11 @@ export class User{
         
     }
     public getUserId() : number{
-        return this.userId 
+        return this.id 
     }
     public setUserId(newUserId:number){
 
-        this.userId = newUserId 
+        this.id = newUserId 
     }
     private validateEmail(inputEmail : string): boolean{ // basic email validation
         const regex : RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/

@@ -5,8 +5,7 @@ import { usersTable,expensesTable,incomesTable } from './db/schema';
 import {User,Expense,Income} from '../expressSrc/ClassDefinitions'
 
   
-
-// group export as obj into class functions 
+// I encountered issues when trying to group these under one function so had to leave them as separate
 
 const db = drizzle(process.env.DATABASE_URL!); // removed export as should only be used internally
 
@@ -29,7 +28,7 @@ export async function AddUser(newUser: User){
   }
   else{
     console.log("Successfully added user");
-    newUser.setUserId(newUserRow.userId) 
+    newUser.setUserId(newUserRow.id) 
 
   }
   
@@ -93,8 +92,8 @@ export async function getUserRecord(username: string ): Promise<  User  >{
     throw new Error("User not in table")
   }
   else{
-    const user = new User(userRow.username,userRow.firstName,userRow.lastName,userRow.email,userRow.hashedPassword,userRow.salt);
-    user.setUserId(userRow.userId)
+    const user = new User(userRow.firstName,userRow.lastName,userRow.username,userRow.email,userRow.hashedPassword,userRow.salt);
+    user.setUserId(userRow.id)
     return user
   }
 
@@ -134,7 +133,7 @@ export async function getIncomeRecord(incomeId: number): Promise< Income >{
 export async function getUsersExpenses(userId:number): Promise<Expense[]>{
   const result = await db.select().from(expensesTable).where(eq(expensesTable.userId,userId))
   if(result.length == 0){
-    throw new Error("")
+    return []
 
   }
   else{
@@ -153,7 +152,7 @@ export async function getUsersExpenses(userId:number): Promise<Expense[]>{
 export async function getUsersIncomes(userId:number): Promise<Income[]>{
   const result = await db.select().from(incomesTable).where(eq(incomesTable.userId,userId))
   if(result.length == 0){
-    throw new Error("")
+    return []
 
   }
   else{
@@ -209,15 +208,20 @@ export async function updateIncomeRecord(income : Income){
 
 }
 
+
+
+// I encountered issues when trying to group these under one function so had to leave them as separate
+
 export async function deleteExpenseRecord(expenseID : number){
   await db.delete(expensesTable).where(eq(expensesTable.id,expenseID))
 }
 export async function deleteIncomeRecord(incomeID : number){
   await db.delete(incomesTable).where(eq(incomesTable.id,incomeID))
 }
-export async function DeleteUserRecord(userID : number){
-  await db.delete(usersTable).where(eq(usersTable.userId,userID))
+export async function deleteUserRecord(userID : number){
+  await db.delete(usersTable).where(eq(usersTable.id,userID))
 }
+
 
 
 /*

@@ -4,9 +4,7 @@ import express, {Request,Response,NextFunction} from 'express'; //Request, Respo
 import * as crypto from 'crypto';
 import * as dbAPI from '../src/dbApiFunctions'; // functions for inserting data into neon db
 import {User,Expense, Income} from './ClassDefinitions'; 
-import { date } from 'drizzle-orm/mysql-core';
-import { isNull } from 'drizzle-orm';
-import { stripTypeScriptTypes } from 'module';
+
 // Initialize the express engine
 
 
@@ -134,7 +132,7 @@ app.post('/api/updateExpense',async (req,res,next) => {
 
         const expense = await dbAPI.getExpenseRecord(id)
         if(expense.getExpensesName() != expensesName && expensesName){
-            expense.setExpenseId(expensesName)
+            expense.setExpensesName(expensesName)
         }
         if(expense.getCost() != cost && cost){
             expense.setCost(cost)
@@ -148,7 +146,7 @@ app.post('/api/updateExpense',async (req,res,next) => {
         if(expense.getRecurring() != recurring && recurring != null){
             expense.setRecurring(recurring)
         }
-        if(expense.getRecurringFreq() != recurring && recurring){
+        if(expense.getRecurringFreq() != recurringFreq && recurringFreq){
             expense.setRecurringFreq(recurringFreq)
         }
         await dbAPI.updateExpenseRecord(expense)
@@ -173,8 +171,8 @@ app.post('/api/updateIncome',async (req,res,next) => {
         if(!(token in tokenDictionary)){
             return res.status(400).json({error : "invalid token"})
         }
-        const User = tokenDictionary[token ]
-        if(User.getUserId() != userId){
+        const user = tokenDictionary[token ]
+        if(user.getUserId() != userId){
             return res.status(400).json({error: "token does not match with user account"})
         }
 
@@ -267,9 +265,9 @@ app.get('/api/getUsersExpenses',async(req,res,next) =>{
             // check to see if it is in the logged in tokenDictionary
             return res.status(400).json({error : "Invalid Token"})
         }
-        const User = tokenDictionary[token];
+        const user = tokenDictionary[token];
     
-        const ExpensesArr = await dbAPI.getUsersExpenses(User.getUserId())
+        const ExpensesArr = await dbAPI.getUsersExpenses(user.getUserId())
         return res.status(200).json(ExpensesArr)
 
     }
@@ -289,9 +287,9 @@ app.get('/api/getUsersIncomes',async(req,res,next) =>{
             // check to see if it is in the logged in tokenDictionary
             return res.status(400).json({error : "Invalid Token"})
         }
-        const User = tokenDictionary[token];
+        const user = tokenDictionary[token];
         
-        const IncomesArr = await dbAPI.getUsersIncomes(User.getUserId())
+        const IncomesArr = await dbAPI.getUsersIncomes(user.getUserId())
         return res.status(200).json(IncomesArr)
 
     }
@@ -360,7 +358,7 @@ app.delete("/api/DeleteUser",async (req,res,next) => {
         if( user.getUserId() != userId){
             return res.status(400).json({error : "token does not match with user account"})
         }
-        await dbAPI.DeleteUserRecord(userId)
+        await dbAPI.deleteUserRecord(userId)
         return res.status(200).json({message : "Successfully deleted the expense"})
 
     }
