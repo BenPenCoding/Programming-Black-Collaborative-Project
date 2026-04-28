@@ -1,41 +1,89 @@
+Remeber to update anchor Tages
+
 # API Documentation
 
 This document describes the Representation State Transfer Application Programming Interface which governs the interactions between the server and the webpage.
 
+[Status Codes and Error Messages](#status-codes-and-error-messages)
+[Authentication](#authentication)
+[Post Requests](#post-request)
+[Get Requests](#get-requests)
+
+## Status Codes and Error Messages
+
+### Status Codes
+
+| Status code | Description           |
+|-------------|-----------------------|
+| 200         | Successfull Response  |
+| 400         | Bad Request           |
+| 500         | Internal Server Error |
+
+### Error Messages
+
+| Status Code | Error Message | Reasons For Error Message |
+|-------------|---------------|---------------------------|
+| 400| Bad Request | Missing field in body, invalid email format |
+|401 | Unauthorised Access | Incorrect username or password, Missing or Incorrect Authentication Token |
+| 500  | Internal Server Error | Database Failure | 
 
 
-## Status Codes
-200 -> Successfull Response
-400 -> Bad Request
-500 -> Internal Server Error
+## Authentication
 
+When a user successfully logs in or signs up, an authetication token is generated. For subsequent requests this token must be attached in the header part of the requests. 
+
+##### Example Header 
+```
+{
+    "Content-Type" : "application/json",
+    "token" : "9c44f7a6a7079bb85bf46a4496ae7b4ad095f7c3fce312cad82c57c4bd574769e4829872961c6ece74e34729bdacfb0752ef229bc3e23327dbcc76d643b1242b"
+}
+
+```
 ## Post Requests
 
+[Log in ](#log-in)
+[Sign up](#sign-up)
+
 ### Log in 
-Description - checks to see if the username and password are in the remote database, and if an account is found then an authentication token is generated otherwise an error message is sent, and a status code is attached.
+Description - checks to see if the username and password are in the remote database, and if an account is found then an authentication token is generated. Otherwise an error message is sent, detailing the issue with the request or server.
 
 Endpoint = api/login
 
 HTTP Method - POST api/login
 
-Request Body Parameters = {
-    username : String,
-    password : String
+##### Request Body Parameters
+|Field| Data Type |
+|-----|------------|
+| username | string |
+| password | string |
+
+
+##### Example Request Body
+
+
+```
+{
+    username : "apiUsername",
+    password : "apiPassword"
 }
+```
 
 #### Validation Rules
 both username and password cannot be empty otherwise a status 400 code will be sent as a response.
 
 
-Example Successful Response = 
+##### Example Successfull and Unsuccesfull Responses for Sign up and Log in 
+```
 {
     "token" : "9c44f7a6a7079bb85bf46a4496ae7b4ad095f7c3fce312cad82c57c4bd574769e4829872961c6ece74e34729bdacfb0752ef229bc3e23327dbcc76d643b1242b"
 }
 
-Example Unsuccessful Response = 
+Example Unsuccessfull Response = 
 {
     "error" : "Internal Server Error"
 }
+```
 
 ### Sign up
 
@@ -45,49 +93,61 @@ Endpoint = api/signUp
 
 HTTP Method - POST api/signUp
 
-Request Body Parameters =
- {
-    username : String,
-    firstName: String,
-    lastName : String,
-    email : String,
-    password: String
-}
+
+| Field | Data Type |
+|-------|-----------|
+| firstName | string |
+| lastName | string |
+| userName | string |
+| email     | string |
+| password | string |
 
 #### Validation Rules
  
 All fields must not be empty
-Email is validated with basic regex
+Email must be formatted correctly
 Email must be unqiue to each user
 
-If any of these rules are broken then there# a stauts code of 400 will be sent as a except email must be unique to each user which has a status code of 500.
 
 
-Example Successfull Response =
- {
-    "token" : "9c44f7a6a7079bb85bf46a4496ae7b4ad095f7c3fce312cad82c57c4bd574769e4829872961c6ece74e34729bdacfb0752ef229bc3e23327dbcc76d643b1242b"
-}
-
-Example Unsuccessful Response = 
-{
-    "error" : "Invalid Email"
-}
-
+[Examples of a Successfull and Unsuccssful Reponses](#example-successful-response)
 
 
 ## GET requests
 
+Each Get request requires a correct authentication token in the header.
+[Correct Header Example](#example-header)
+
+###### Unsuccessfull Request for Get,Delete Requests 
+```
+{
+    error : "Internal Server Error "
+}
+```
 ### Get User's Expeneses
 
-Returns an array of users expenses. Requires an auth token in the header
+Returns an array of users expenses. 
 
 Endpoint= "/api/getUsersExpenses"
 
-Request Header Parameters = {
-    token : string 
-}
+HTTP Method - GET /api/getUsers/Expenses
 
-Example successfull Response
+
+##### Response Body Array of Expenses
+
+|Field | Data Type |
+|------|-----------|
+|name | string |
+|cost | string |
+|dateAdded| Date|
+|description| string |
+|userId | number |
+|recurring | boolean |
+| recurringFreq | number |
+
+
+##### Example successfull Response
+```
 {
       [
       {
@@ -102,22 +162,36 @@ Example successfull Response
       }
     ]
 }
-Example Unsuccessfull Reponse = 
-{
-    "error" : "Internal Server error"
 
-}
+```
+
+
+
+[Unsuccessfull Response](#example-successfull-and-unsuccesfull-responses-for-get-Requests)
 
 ### Get User's Incomes
 
-Returns an array of users incomes. Requires an auth token in the header
+Returns an array of users incomes.
 
 Endpoint= "/api/getUsersIncomes"
 
-Request Header Parameters = {
-    token : string 
-}
+HTTP Method = GET /api/getUsersIncomes
+##### Response Body Array of Incomes
 
+
+| Field | Data Type |
+|-------|-----------|
+|name | string |
+|earning | string |
+| userId | number |
+| dateAdded | Date |
+|description | string|
+|recurring | boolean |
+| recurringFreq| number |
+
+
+
+```
 Example successfull Response
 {
       [
@@ -133,14 +207,7 @@ Example successfull Response
       }
     ]
 }
-Example Unsuccessfull Reponse = 
-{
-    "error" : "Internal Server error"
+```
 
-}
+[Unsuccessfull Response](#unsuccessfull-request-for-getdelete-requests)
 
-private incomeName: string;
-    private incomeId: number;
-    private earning: number;
-    private userId: number;
-    private dateAdded: Date;

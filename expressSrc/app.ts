@@ -63,14 +63,14 @@ app.post('/api/login', async (req , res, next ) => {
         // check if username or password is empty
         if(!username || !password){
             // client issue so do not send to general error handler
-            return res.status(400).json({error: "there is an empty field"})
+            return res.status(400).json({error: "Bad Request"})
             }
     
       
 
         const cachedUser = await dbAPI.getUserRecord(username) ; //  checking to see if in the db, userID updated  via return statement
         if(!verifyPassword(password,cachedUser.getSalt(),cachedUser.getHashedPassword())){
-            throw new Error("Password is incorrect")
+            return res.status(401).json({error : "Unauthorised Access"})
         }
 
         // create an auth token
@@ -95,7 +95,7 @@ app.post('/api/signUp', async (req,res,next) => {
         const {firstName,lastName,username,email,password} = req.body
         if(!firstName || !lastName || !username || !email || !password ){
         
-            return res.status(400).json({error : " there is an empty field"})
+            return res.status(400).json({error : "Bad Request"})
         }
     
         const {salt,hash} = hashPassword(password)
@@ -122,11 +122,11 @@ app.post('/api/updateExpense',async (req,res,next) => {
         const {expensesName,cost,dateAdded,description,userId,id,recurring,recurringFreq} = req.body
         const token  = req.headers.token as string
         if(!(token in tokenDictionary)){
-            return res.status(400).json({error : "invalid token"})
+            return res.status(401).json({error : "Unauthorised Access"})
         }
         const User = tokenDictionary[token]
         if(User.getUserId() != userId){
-            return res.status(400).json({error: " token does not match with user account"})
+            return res.status(401).json({error: " Unauthorised Access"})
         }
 
 
@@ -169,11 +169,11 @@ app.post('/api/updateIncome',async (req,res,next) => {
 
         const token  = req.headers.token as string
         if(!(token in tokenDictionary)){
-            return res.status(400).json({error : "invalid token"})
+            return res.status(401).json({error : "Unauthorised Access"})
         }
         const user = tokenDictionary[token ]
         if(user.getUserId() != userId){
-            return res.status(400).json({error: "token does not match with user account"})
+            return res.status(401).json({error: "Unauthorised Access"})
         }
 
         const income = await dbAPI.getIncomeRecord(id)
@@ -210,12 +210,12 @@ app.post("/api/addExpense", async (req,res,next) => {
     try{
         const token = req.headers.token as string
         if(!(token in tokenDictionary)){
-            return res.status(400).json({error : "invalid token"})
+            return res.status(401).json({error : "Unauthorised Access"})
         }
         const user = tokenDictionary[token]
 
         if(user.getUserId() != req.body.userId){
-            return res.status(400).json({error : "token does not match with user account"})
+            return res.status(401).json({error : "Unauthorised Access"})
         }
         
 
@@ -235,12 +235,12 @@ app.post("/api/addIncome", async (req,res ,next) =>{
     try{
         const token = req.headers.token as string
         if(!(token in tokenDictionary)){
-            return res.status(400).json({error : "invalid token"})
+            return res.status(401).json({error : "Unauthorised Access"})
         }
         const user = tokenDictionary[token]
 
         if(user.getUserId() != req.body.userId){
-            return res.status(400).json({error : "token does not match with user account"})
+            return res.status(401).json({error : "Unauthorised Access"})
         }
 
 
@@ -263,7 +263,7 @@ app.get('/api/getUsersExpenses',async(req,res,next) =>{
     
         if(!(token in tokenDictionary)){
             // check to see if it is in the logged in tokenDictionary
-            return res.status(400).json({error : "Invalid Token"})
+            return res.status(401).json({error : "Unauthorised Access"})
         }
         const user = tokenDictionary[token];
     
@@ -285,7 +285,7 @@ app.get('/api/getUsersIncomes',async(req,res,next) =>{
 
         if(!(token in tokenDictionary)){
             // check to see if it is in the logged in tokenDictionary
-            return res.status(400).json({error : "Invalid Token"})
+            return res.status(401).json({error : "Unauthorised  Access"})
         }
         const user = tokenDictionary[token];
         
@@ -310,11 +310,11 @@ app.delete("/api/DeleteExpense",async (req,res,next) => {
         const token = req.headers.token as string
         const {userId,ExpenseId} = req.body
         if(!(token in tokenDictionary )){
-            return res.status(400).json({error : "invalid token"})
+            return res.status(401).json({error : "Unauthorised Access"})
         }
         const user = tokenDictionary[token]
         if( user.getUserId() != userId){
-            return res.status(400).json({error : "token does not match with user account"})
+            return res.status(401).json({error : "Unauthorised Access"})
         }
         await dbAPI.deleteExpenseRecord(ExpenseId)
         return res.status(200).json({message : "Successfully deleted the expense"})
@@ -331,11 +331,11 @@ app.delete("/api/DeleteIncome",async (req,res,next) => {
         const token = req.headers.token as string
         const {userId,incomeId} = req.body
         if(!(token in tokenDictionary )){
-            return res.status(400).json({error : "invalid token"})
+            return res.status(401).json({error : "Unauthorised Access"})
         }
         const user = tokenDictionary[token]
         if( user.getUserId() != userId){
-            return res.status(400).json({error : "token does not match with user account"})
+            return res.status(401).json({error : "Unauthorised Access"})
         }
         await dbAPI.deleteIncomeRecord(incomeId)
         return res.status(200).json({message : "Successfully deleted the expense"})
@@ -352,11 +352,11 @@ app.delete("/api/DeleteUser",async (req,res,next) => {
         const token = req.headers.token as string
         const {userId} = req.body
         if(!(token in tokenDictionary )){
-            return res.status(400).json({error : "invalid token"})
+            return res.status(401).json({error : "Unauthorised Access"})
         }
         const user = tokenDictionary[token]
         if( user.getUserId() != userId){
-            return res.status(400).json({error : "token does not match with user account"})
+            return res.status(401).json({error : "Unauthorised Access"})
         }
         await dbAPI.deleteUserRecord(userId)
         return res.status(200).json({message : "Successfully deleted the expense"})
@@ -371,7 +371,7 @@ app.delete("/api/DeleteUser",async (req,res,next) => {
 const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err);
   if(err.message == "invalid Email"){
-    return res.status(400).json({error : err.message})
+    return res.status(400).json({error : "Bad Request"})
   }
   res.status(500).json({ error:  err.message });
 };

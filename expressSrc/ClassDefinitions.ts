@@ -125,7 +125,7 @@ export class Expense extends cashFlow{
 
     public constructor({name, cost , dateAdded , description , userId,recurring,recurringFreq} :
         {
-            name : string
+             : string
             cost : string
             dateAdded : Date
             description : string
@@ -133,7 +133,7 @@ export class Expense extends cashFlow{
             recurring : boolean
             recurringFreq : number
 
-            
+            name
         }
     ){
         super(name ,cost,dateAdded,description,userId,recurring,recurringFreq)
