@@ -61,7 +61,10 @@ export async function AddIncome(newIncome: Income){
     userId : newIncome.getUserId(),
     dateAdded : newIncome.getDateAdded(),
     incomeName : newIncome.getIncomeName(),
-    earning : newIncome.getEarning().toString()
+    earning : newIncome.getEarning().toString(),
+    description : newIncome.getDescription(),
+    recurring : newIncome.getRecurring(),
+    recurringFreq : newIncome.getRecurringFreq()
   }
   const result = await db.insert(incomesTable).values(incomeEntry).returning();
   const newIncomeRow = result[0];
@@ -117,7 +120,7 @@ export async function getIncomeRecord(incomeId: number): Promise< Income >{
     throw new Error("Expense not in table ")
   }
   else{
-    const income = new Income(incomeRow.incomeName,(incomeRow.earning as any ) as number,incomeRow.userId,incomeRow.dateAdded) 
+    const income = new Income(incomeRow.incomeName,(incomeRow.earning as any ) as number,incomeRow.userId,incomeRow.dateAdded,incomeRow.description,incomeRow.recurring,incomeRow.recurringFreq) 
     income.setIncomeId(incomeRow.incomeId)
     return  income 
   }  
@@ -157,12 +160,17 @@ export async function getUsersIncomes(userId:number): Promise<Income[]>{
     const incomeClassResult = []
     for(let i : number = 0; i < result.length;i++){
       let incomeRow = result[i]
-      let income = new Income(incomeRow.incomeName,(incomeRow.earning as any ) as number,incomeRow.userId,incomeRow.dateAdded) 
+      let income = new Income(incomeRow.incomeName,(incomeRow.earning as any ) as number,incomeRow.userId,incomeRow.dateAdded,incomeRow.description,incomeRow.recurring,incomeRow.recurringFreq) 
       income.setIncomeId(incomeRow.incomeId)
       incomeClassResult.push(income)
     }
     return incomeClassResult
   }
+}
+
+
+export async function updateIncomeRecord(expenseId : number){
+
 }
 
 

@@ -31,11 +31,13 @@ export const expensesTable = pgTable('expenses', {
 
 export const incomesTable = pgTable('incomes',{
   userId: integer('user_id').references(() => usersTable.userId).notNull(),
+  incomeId: integer('id').primaryKey().generatedAlwaysAsIdentity(),
   incomeName: text('expenses_name').notNull(), // ts convention and sql convention 
-  incomeId: integer('id').primaryKey().generatedAlwaysAsIdentity(), 
   earning:  numeric('cost').notNull(),
   dateAdded: timestamp('date_added').notNull(),
-
+  description: text('description').notNull(),
+  recurring: boolean('recurring').notNull(),
+  recurringFreq: integer('recurringFreq').notNull()
 
 })
 

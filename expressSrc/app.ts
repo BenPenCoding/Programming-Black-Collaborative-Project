@@ -3,8 +3,13 @@ import express, {Request,Response,NextFunction} from 'express'; //Request, Respo
 import * as crypto from 'crypto';
 import * as dbAPI from '../src/dbApiFunctions'; // functions for inserting data into neon db
 import {User,Expense} from './ClassDefinitions'; 
+import { date } from 'drizzle-orm/mysql-core';
+import { isNull } from 'drizzle-orm';
 // Initialize the express engine
 
+
+
+// might have to wrap parse request in try catches
 
 
 const app: express.Application = express();
@@ -134,7 +139,8 @@ app.get('/api/getUsersExpenses',async(req,res,next) =>{
 })
 app.get('/api/getUsersIncomes',async(req,res,next) =>{
 
-    const {token} = req.body
+    const token = req.headers.token as string 
+
     if(!(token in tokenDictionary)){
         // check to see if it is in the logged in tokenDictionary
         return res.status(400).json({error : "Invalid Token"})
@@ -153,10 +159,44 @@ app.get('/api/getUsersIncomes',async(req,res,next) =>{
 
 })
 
+// change location
+app.post('/api/addExpense',async (req,res,next) => {
+    const token = req.headers.token as string
+    if(!(token in tokenDictionary)){
+        // check to see if it is in the logged in tokenDictionary
+        return res.status(400).json({error : "Invalid Token"})
+    }
+    const {expensesName,cost,dateAdded,description,userId,id,recurring,recurringFreq} = req.body
+    const Expense = await dbAPI.getExpenseRecord(id)
+    if(Expense.getExpensesName() != expensesName && expensesName){
+        Expense.setExpenseId(expensesName)
+    }
+    if(Expense.getCost() != cost && cost){
+        Expense.setCost(cost)
+    }
+    if(Expense.getDateAdded() != dateAdded && dateAdded){
+        Expense.setDateAdded(dateAdded)
+    }
+    if(Expense.getDescription() != description && description){
+        Expense.setDescription(description)
+    }
+    if(Expense.getRecurring() != recurring && recurring != null){
+        Expense.setRecurring(recurring)
+    }
+    if(Expense.getRecurringFreq() != recurring && recurring){
+        Expense.setRecurringFreq(recurringFreq)
+    }
+    
 
+
+
+})
 
 const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err);
+  if(err.message == "invalid Email"){
+    return res.status(400).json({error : err.message})
+  }
   res.status(500).json({ error:  err.message });
 };
 
