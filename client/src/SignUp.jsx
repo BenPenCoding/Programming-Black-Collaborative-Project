@@ -4,6 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 function SignUp() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [firstname, setFirstname] = useState("");
+  const [surname, setSurname] = useState("");
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
@@ -12,7 +15,7 @@ function SignUp() {
     event.preventDefault();
     
     try {
-      if (!username || !password) {
+      if (!username || !password || !email || !firstname || !surname) {
         setError("Please fill in all fields");
         return;
       }
@@ -24,7 +27,10 @@ function SignUp() {
         },
         body: JSON.stringify({
           username,
-          password
+          password,
+          email,
+          firstname,
+          surname
         })
     });
 
@@ -47,6 +53,9 @@ function SignUp() {
         <h1 className="my-3">Sign Up</h1>
         
         <form onSubmit={handleSignUp}>
+          <Firstname firstname={firstname} setFirstname={setFirstname} />
+          <Surname surname={surname} setSurname={setSurname} />
+          <Email email={email} setEmail={setEmail} />
           <Username username={username} setUsername={setUsername} />
           <Password password={password} setPassword={setPassword} />
           <Submit />
@@ -59,9 +68,35 @@ function SignUp() {
   );
 }
 
+function Firstname({firstname, setFirstname}) {
+  return (
+    <div className="form-group my-2 text-start">
+        <label htmlFor="firstname" className="form-label">First Name:</label>
+        <input type="text" className="form-control" id="firstname" placeholder="Enter First Name" value={firstname} onChange={(event) => setFirstname(event.target.value)} />
+    </div>
+  );
+}
+
+function Surname({surname, setSurname}) {
+  return (
+    <div className="form-group my-2 text-start">
+        <label htmlFor="surname" className="form-label">Surname:</label>
+        <input type="text" className="form-control" id="surname" placeholder="Enter Surname" value={surname} onChange={(event) => setSurname(event.target.value)} />
+    </div>
+  );
+}
+function Email({email, setEmail}) {
+  return (
+    <div className="form-group my-2 text-start">
+        <label htmlFor="email" className="form-label">Email:</label>
+        <input type="email" className="form-control" id="email" placeholder="Enter Email" value={email} onChange={(event) => setEmail(event.target.value)} />
+    </div>
+  );
+}
+
 function Username({username, setUsername}) {
   return (
-    <div className="form-group my-2">
+    <div className="form-group my-2 text-start">
         <label htmlFor="username" className="form-label">Username:</label>
         <input type="text" className="form-control" id="username" placeholder="Enter Username" value={username} onChange={(event) => setUsername(event.target.value)} />
     </div>
@@ -70,7 +105,7 @@ function Username({username, setUsername}) {
 
 function Password({password, setPassword}) {
   return (
-    <div className="form-group my-2">
+    <div className="form-group my-2 text-start">
      <label htmlFor="password" className="form-label">Password:</label>
      <input type="password" className="form-control" id="password" placeholder="Enter Password" value={password} onChange={(event) => setPassword(event.target.value)} />
     </div>
