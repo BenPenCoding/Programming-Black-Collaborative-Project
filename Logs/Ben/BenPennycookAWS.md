@@ -54,17 +54,27 @@ After some research, I have come to the conclusion that, while still using Ampli
 
 > AWS Lambda is an event-driven, serverless Function as a Service provided by Amazon as a part of Amazon Web Services. It is designed to enable developers to run code without provisioning or managing servers. It executes code in response to events and automatically manages the computing resources required by that code.
 
-What this means for our project, is that the React application will call the backend API which will be hosted on Amazon's Lambda serverless service. This is much more effective than the more popular EC2 service, as it requires less maintenance  than EC2, and has less risk of costing me money. 
+What this means for our project, is that the React application will call the backend API which will be hosted on Amazon's Lambda serverless service. This is much more effective than the more popular EC2 service, as it requires less maintxenance  than EC2, and has less risk of costing me money. 
 
 
 
+## Entry 3 - Delays!
 
+### A huge setback
 
+For two weeks, I was unable to access AWS services. This started when I tried to access them from a VPN and was met with a sign-in error, but this was just the start of my problems! I was then required by AWS to change my password, but the verification email would never get sent to me. After many attemps I grew frustrated and put the issue aside for awhile. 
 
+In a rash decision I tried to start over and make a new account, however because my bank details were attached to the 'locked' account I was not able to create a new one (none of my family trusted me handling an AWS account with their bank detais). So, with no options left and as the project deadline got closer I decided to look further into the issue and realised the verification emails were going elsewhere! As part of MFA (multi-factor authentication) I had multiple emails attached to the AWS account and all of the missed emails were being sent to an account I no longer properly use, apart from for MFA purposes. 
 
+Embarrassed and a week behind, I knew I had to make progress quick! Before I could steam ahead however, I looked into Amazon Web Services' MFA guidelines:
 
+&nbsp;
 
+![Multi-factor authentication](MFA.png)
 
+&nbsp;
+
+Having learned this important information I was able to finally deploy our app. 
 
 
 
