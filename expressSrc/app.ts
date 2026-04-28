@@ -56,7 +56,7 @@ tokenDictionary["authTokenForTesting"] = testingUser
 
 
 
-// Post Functions
+// POST Routes
 app.post('/api/login', async (req , res, next ) => {
 
     try{
@@ -93,6 +93,7 @@ app.post('/api/login', async (req , res, next ) => {
 app.post('/api/signUp', async (req,res,next) => {
     try{
 
+
         const {firstName,lastName,username,email,password} = req.body
         if(!firstName || !lastName || !username || !email || !password ){
         
@@ -121,7 +122,16 @@ app.post('/api/updateExpense',async (req,res,next) => {
     try{
 
         const {expensesName,cost,dateAdded,description,userId,id,recurring,recurringFreq} = req.body
-        
+        const token  = req.headers.token as string
+        if(!(token in tokenDictionary)){
+            return res.status(400).json({error : "invalid token"})
+        }
+        const User = tokenDictionary[token]
+        if(User.getUserId() != userId){
+            return res.status(400).json({error: " token does not match with user account"})
+        }
+
+
         const expense = await dbAPI.getExpenseRecord(id)
         if(expense.getExpensesName() != expensesName && expensesName){
             expense.setExpenseId(expensesName)
@@ -158,6 +168,16 @@ app.post('/api/updateIncome',async (req,res,next) => {
         // write in api doc this order
 
         const {incomeName,earning,userId,id,dateAdded,description,recurring,recurringFreq} = req.body
+
+        const token  = req.headers.token as string
+        if(!(token in tokenDictionary)){
+            return res.status(400).json({error : "invalid token"})
+        }
+        const User = tokenDictionary[token ]
+        if(User.getUserId() != userId){
+            return res.status(400).json({error: "token does not match with user account"})
+        }
+
         const income = await dbAPI.getIncomeRecord(id)
         if(income.getIncomeName() != incomeName && incomeName){
             income.setIncomeName(incomeName)
@@ -192,8 +212,14 @@ app.post("/api/addExpense", async (req,res,next) => {
     try{
         const token = req.headers.token as string
         if(!(token in tokenDictionary)){
-            res.status(400).json({error : "Invalid token"})
+            return res.status(400).json({error : "invalid token"})
         }
+        const user = tokenDictionary[token]
+
+        if(user.getUserId() != req.body.userId){
+            return res.status(400).json({error : "token does not match with user account"})
+        }
+        
 
         const newExpense = new Expense(req.body)
         await dbAPI.AddExpense(newExpense)
@@ -211,7 +237,12 @@ app.post("/api/addIncome", async (req,res ,next) =>{
     try{
         const token = req.headers.token as string
         if(!(token in tokenDictionary)){
-            res.status(400).json({error : "Invalid token"})
+            return res.status(400).json({error : "invalid token"})
+        }
+        const user = tokenDictionary[token]
+
+        if(user.getUserId() != req.body.userId){
+            return res.status(400).json({error : "token does not match with user account"})
         }
 
 
@@ -226,7 +257,7 @@ app.post("/api/addIncome", async (req,res ,next) =>{
     }
 })
 
-// GET functions
+// GET Routes
 app.get('/api/getUsersExpenses',async(req,res,next) =>{
     try{
 
@@ -273,6 +304,71 @@ app.get('/api/getUsersIncomes',async(req,res,next) =>{
 })
 
 
+
+// DELETE Routes
+
+app.delete("/api/DeleteExpense",async (req,res,next) => {
+    try{
+        const token = req.headers.token as string
+        const {userId,ExpenseId} = req.body
+        if(!(token in tokenDictionary )){
+            return res.status(400).json({error : "invalid token"})
+        }
+        const user = tokenDictionary[token]
+        if( user.getUserId() != userId){
+            return res.status(400).json({error : "token does not match with user account"})
+        }
+        await dbAPI.deleteExpenseRecord(ExpenseId)
+        return res.status(200).json({message : "Successfully deleted the expense"})
+
+    }
+    catch(error){
+        next(error)
+    }
+
+})
+
+app.delete("/api/DeleteIncome",async (req,res,next) => {
+    try{
+        const token = req.headers.token as string
+        const {userId,incomeId} = req.body
+        if(!(token in tokenDictionary )){
+            return res.status(400).json({error : "invalid token"})
+        }
+        const user = tokenDictionary[token]
+        if( user.getUserId() != userId){
+            return res.status(400).json({error : "token does not match with user account"})
+        }
+        await dbAPI.deleteIncomeRecord(incomeId)
+        return res.status(200).json({message : "Successfully deleted the expense"})
+
+    }
+    catch(error){
+        next(error)
+    }
+
+})
+
+app.delete("/api/DeleteUser",async (req,res,next) => {
+    try{
+        const token = req.headers.token as string
+        const {userId} = req.body
+        if(!(token in tokenDictionary )){
+            return res.status(400).json({error : "invalid token"})
+        }
+        const user = tokenDictionary[token]
+        if( user.getUserId() != userId){
+            return res.status(400).json({error : "token does not match with user account"})
+        }
+        await dbAPI.DeleteUserRecord(userId)
+        return res.status(200).json({message : "Successfully deleted the expense"})
+
+    }
+    catch(error){
+        next(error)
+    }
+
+})
 
 const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err);

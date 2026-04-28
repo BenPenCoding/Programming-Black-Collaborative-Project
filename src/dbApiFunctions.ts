@@ -5,6 +5,9 @@ import { usersTable,expensesTable,incomesTable } from './db/schema';
 import {User,Expense,Income} from '../expressSrc/ClassDefinitions'
 
   
+
+// group export as obj into class functions 
+
 const db = drizzle(process.env.DATABASE_URL!); // removed export as should only be used internally
 
 export async function AddUser(newUser: User){
@@ -206,7 +209,15 @@ export async function updateIncomeRecord(income : Income){
 
 }
 
-
+export async function deleteExpenseRecord(expenseID : number){
+  await db.delete(expensesTable).where(eq(expensesTable.id,expenseID))
+}
+export async function deleteIncomeRecord(incomeID : number){
+  await db.delete(incomesTable).where(eq(incomesTable.id,incomeID))
+}
+export async function DeleteUserRecord(userID : number){
+  await db.delete(usersTable).where(eq(usersTable.userId,userID))
+}
 
 
 /*
