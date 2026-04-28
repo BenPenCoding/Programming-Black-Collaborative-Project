@@ -151,7 +151,7 @@ app.post('/api/updateExpense',async (req,res,next) => {
         }
         await dbAPI.updateExpenseRecord(expense)
 
-        res.status(200).send({response : "succssfully updated expense"})
+        res.status(200).send({response : "successfully updated expense"})
 
     }
     catch(error){
@@ -305,7 +305,7 @@ app.get('/api/getUsersIncomes',async(req,res,next) =>{
 
 // DELETE Routes
 
-app.delete("/api/DeleteExpense",async (req,res,next) => {
+app.delete("/api/deleteExpense",async (req,res,next) => {
     try{
         const token = req.headers.token as string
         const {userId,ExpenseId} = req.body
@@ -326,7 +326,7 @@ app.delete("/api/DeleteExpense",async (req,res,next) => {
 
 })
 
-app.delete("/api/DeleteIncome",async (req,res,next) => {
+app.delete("/api/deleteIncome",async (req,res,next) => {
     try{
         const token = req.headers.token as string
         const {userId,incomeId} = req.body
@@ -338,7 +338,7 @@ app.delete("/api/DeleteIncome",async (req,res,next) => {
             return res.status(401).json({error : "Unauthorised Access"})
         }
         await dbAPI.deleteIncomeRecord(incomeId)
-        return res.status(200).json({message : "Successfully deleted the expense"})
+        return res.status(200).json({message : "Successfully deleted the income"})
 
     }
     catch(error){
@@ -347,7 +347,7 @@ app.delete("/api/DeleteIncome",async (req,res,next) => {
 
 })
 
-app.delete("/api/DeleteUser",async (req,res,next) => {
+app.delete("/api/deleteUser",async (req,res,next) => {
     try{
         const token = req.headers.token as string
         const {userId} = req.body
@@ -359,7 +359,7 @@ app.delete("/api/DeleteUser",async (req,res,next) => {
             return res.status(401).json({error : "Unauthorised Access"})
         }
         await dbAPI.deleteUserRecord(userId)
-        return res.status(200).json({message : "Successfully deleted the expense"})
+        return res.status(200).json({message : "Successfully deleted the user"})
 
     }
     catch(error){
