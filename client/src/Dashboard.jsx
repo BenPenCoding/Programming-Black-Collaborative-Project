@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 
 function Dashboard() {
   const [incomeamount, setIncomeAmount] = useState("");
@@ -11,60 +10,63 @@ function Dashboard() {
   const [incomes, setIncomes] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId");
 
   const totalIncome = incomes.reduce((sum, i) => sum + Number(i.earning || 0), 0);
   const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.cost || 0), 0);
   const balance = totalIncome - totalExpenses;
 
   useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/getUsersIncomes`, {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
+    const fetchData = async () => {
+      try {
+        const incomeRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/getUsersIncomes`, {
+          headers: {
+            token: token
+          }
+        });
 
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/getUsersExpenses`, {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
+        const expenseRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/getUsersExpenses`, {
+          headers: {
+            token: token
+          }
+        });
 
-      const incomeData = await incomeRes.json();
-      const expenseData = await expenseRes.json();
+        const incomeData = await incomeRes.json();
+        const expenseData = await expenseRes.json();
 
-      if (incomeRes.ok) setIncomes(incomeData);
-      if (expenseRes.ok) setExpenses(expenseData);
+        if (incomeRes.ok) setIncomes(incomeData);
+        if (expenseRes.ok) setExpenses(expenseData);
+      } catch (err) {
+        console.error(err);
+      }
+    };
 
-    } catch (err) {
-      console.error(err);
+    if (token) {
+      fetchData();
     }
-  };
-
-  fetchData();
-}, [token]);
+  }, [token]);
 
   const handleNewIncome = async (event) => {
     event.preventDefault();
-    
+
     try {
       if (!incomeamount || !incomeref) {
         setErrorIncome("Please fill in all fields");
         return;
       }
 
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/newincome`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/addIncome`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          token: token
         },
         body: JSON.stringify({
-          incomeamount,
-          incomeref
+          incomeName: incomeref,
+          earning: Number(incomeamount),
+          userId: userId
         })
-    });
+      });
 
       const respNewIncome = await response.json();
 
@@ -75,42 +77,42 @@ function Dashboard() {
 
         const updated = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/getUsersIncomes`, {
           headers: {
-            "Authorization": `Bearer ${token}`
+            token: token
           }
         });
+
         const data = await updated.json();
         setIncomes(data);
-
       } else {
-        setErrorIncome(respNewIncome.message);
+        setErrorIncome(respNewIncome.error || "Something went wrong");
       }
-
-    } catch (errorIncome) {
+    } catch (error) {
       setErrorIncome("Something went wrong");
-      console.error(errorIncome);
-  }
+      console.error(error);
+    }
   };
 
   const handleNewExpense = async (event) => {
     event.preventDefault();
-    
+
     try {
       if (!expenseamount || !expenseref) {
         setErrorExpense("Please fill in all fields");
         return;
       }
 
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/newexpense`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/addExpense`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          token: token
         },
         body: JSON.stringify({
-          expenseamount,
-          expenseref
+          expensesName: expenseref,
+          cost: Number(expenseamount),
+          userId: userId
         })
-    });
+      });
 
       const respNewExpense = await response.json();
 
@@ -118,88 +120,145 @@ function Dashboard() {
         setExpenseAmount("");
         setExpenseRef("");
         setErrorExpense("");
-        
+
         const updated = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/getUsersExpenses`, {
           headers: {
-            "Authorization": `Bearer ${token}`
+            token: token
           }
         });
+
         const data = await updated.json();
         setExpenses(data);
-
       } else {
-        setErrorExpense(respNewExpense.message);
+        setErrorExpense(respNewExpense.error || "Something went wrong");
       }
-
-    } catch (errorExpense) {
+    } catch (error) {
       setErrorExpense("Something went wrong");
-      console.error(errorExpense);
-  }
+      console.error(error);
+    }
   };
 
   return (
     <div className="container-fluid p-5">
-        <div className="row g-5">
-            <div className="col-4"><Summary balance={balance} /></div>
-            <div className="col-4"><Income incomes={incomes} incomeamount={incomeamount} setIncomeAmount={setIncomeAmount} incomeref={incomeref} setIncomeRef={setIncomeRef} handleNewIncome={handleNewIncome} error={errorIncome} /></div>
-            <div className="col-4"><Expenses expenses={expenses} expenseamount={expenseamount} setExpenseAmount={setExpenseAmount} expenseref={expenseref} setExpenseRef={setExpenseRef} handleNewExpense={handleNewExpense} error={errorExpense} /></div>
+      <div className="row g-5">
+        <div className="col-4">
+          <Summary balance={balance} />
         </div>
+        <div className="col-4">
+          <Income
+            incomes={incomes}
+            incomeamount={incomeamount}
+            setIncomeAmount={setIncomeAmount}
+            incomeref={incomeref}
+            setIncomeRef={setIncomeRef}
+            handleNewIncome={handleNewIncome}
+            error={errorIncome}
+          />
+        </div>
+        <div className="col-4">
+          <Expenses
+            expenses={expenses}
+            expenseamount={expenseamount}
+            setExpenseAmount={setExpenseAmount}
+            expenseref={expenseref}
+            setExpenseRef={setExpenseRef}
+            handleNewExpense={handleNewExpense}
+            error={errorExpense}
+          />
+        </div>
+      </div>
     </div>
   );
 }
 
-function Summary({balance}) {
+function Summary({ balance }) {
   return (
     <div className="container p-5 my-5 border text-center">
-     <h1 className="my-3">Balance</h1>
-     <p>£{balance}</p>
+      <h1 className="my-3">Balance</h1>
+      <p>£{balance}</p>
     </div>
-  )
+  );
 }
 
-function Income({incomes, incomeamount, setIncomeAmount, incomeref, setIncomeRef, handleNewIncome, error}) {
+function Income({
+  incomes,
+  incomeamount,
+  setIncomeAmount,
+  incomeref,
+  setIncomeRef,
+  handleNewIncome,
+  error
+}) {
   return (
     <div className="container p-5 my-5 border text-center">
       <h1 className="my-3">Income</h1>
       {incomes.map((inc) => (
         <div key={inc.incomeId}>
-          <p>{inc.incomeName} - £{inc.earning}</p>
+          <p>{inc.incomeName} : £{inc.earning}</p>
         </div>
       ))}
 
-     <NewIncome incomeamount={incomeamount} setIncomeAmount={setIncomeAmount} incomeref={incomeref} setIncomeRef={setIncomeRef} handleNewIncome={handleNewIncome} error={error} />
+      <NewIncome
+        incomeamount={incomeamount}
+        setIncomeAmount={setIncomeAmount}
+        incomeref={incomeref}
+        setIncomeRef={setIncomeRef}
+        handleNewIncome={handleNewIncome}
+        error={error}
+      />
     </div>
-  )
+  );
 }
 
-function NewIncome({incomeamount, setIncomeAmount, incomeref, setIncomeRef, handleNewIncome, error}) {
+function NewIncome({
+  incomeamount,
+  setIncomeAmount,
+  incomeref,
+  setIncomeRef,
+  handleNewIncome,
+  error
+}) {
   return (
     <form onSubmit={handleNewIncome} className="container border text-start">
       <h3 className="my-3">Add New Income:</h3>
       <IncomeAmount incomeamount={incomeamount} setIncomeAmount={setIncomeAmount} />
       <IncomeRef incomeref={incomeref} setIncomeRef={setIncomeRef} />
-      
+
       {error && <p className="text-danger">{error}</p>}
-      
+
       <SubmitIncome />
     </form>
-  )
+  );
 }
 
-function IncomeAmount({incomeamount, setIncomeAmount}) {
+function IncomeAmount({ incomeamount, setIncomeAmount }) {
   return (
     <div className="form-group my-2">
-        <label htmlFor="incomeamount" className="form-label">Amount:</label>
-        <input type="text" className="form-control" id="incomeamount" placeholder="Enter Income Amount" value={incomeamount} onChange={(event) => setIncomeAmount(event.target.value)} />
+      <label htmlFor="incomeamount" className="form-label">Amount:</label>
+      <input
+        type="text"
+        className="form-control"
+        id="incomeamount"
+        placeholder="Enter Income Amount"
+        value={incomeamount}
+        onChange={(event) => setIncomeAmount(event.target.value)}
+      />
     </div>
   );
 }
 
-function IncomeRef({incomeref, setIncomeRef}) {
+function IncomeRef({ incomeref, setIncomeRef }) {
   return (
     <div className="form-group my-2">
-     <label htmlFor="incomeref" className="form-label">Reference:</label>
-     <input type="text" className="form-control" id="incomeref" placeholder="Enter Income Reference" value={incomeref} onChange={(event) => setIncomeRef(event.target.value)} />
+      <label htmlFor="incomeref" className="form-label">Reference:</label>
+      <input
+        type="text"
+        className="form-control"
+        id="incomeref"
+        placeholder="Enter Income Reference"
+        value={incomeref}
+        onChange={(event) => setIncomeRef(event.target.value)}
+      />
     </div>
   );
 }
@@ -210,50 +269,86 @@ function SubmitIncome() {
   );
 }
 
-function Expenses({expenses, expenseamount, setExpenseAmount, expenseref, setExpenseRef, handleNewExpense, error}) {
+function Expenses({
+  expenses,
+  expenseamount,
+  setExpenseAmount,
+  expenseref,
+  setExpenseRef,
+  handleNewExpense,
+  error
+}) {
   return (
     <div className="container p-5 my-5 border text-center">
-     <h1 className="my-3">Expenses</h1>
+      <h1 className="my-3">Expenses</h1>
 
-     {expenses.map((exp) => (
+      {expenses.map((exp) => (
         <div key={exp.expenseId}>
-          <p>{exp.expense} - £{exp.cost}</p>
+          <p>{exp.expensesName} : £{exp.cost}</p>
         </div>
       ))}
 
-     <NewExpense expenseamount={expenseamount} setExpenseAmount={setExpenseAmount} expenseref={expenseref} setExpenseRef={setExpenseRef} handleNewExpense={handleNewExpense} error={error} />
+      <NewExpense
+        expenseamount={expenseamount}
+        setExpenseAmount={setExpenseAmount}
+        expenseref={expenseref}
+        setExpenseRef={setExpenseRef}
+        handleNewExpense={handleNewExpense}
+        error={error}
+      />
     </div>
-  )
+  );
 }
 
-function NewExpense({expenseamount, setExpenseAmount, expenseref, setExpenseRef, handleNewExpense, error}) {
+function NewExpense({
+  expenseamount,
+  setExpenseAmount,
+  expenseref,
+  setExpenseRef,
+  handleNewExpense,
+  error
+}) {
   return (
     <form onSubmit={handleNewExpense} className="container border text-start">
       <h3 className="my-3">Add New Expense:</h3>
       <ExpenseAmount expenseamount={expenseamount} setExpenseAmount={setExpenseAmount} />
       <ExpenseRef expenseref={expenseref} setExpenseRef={setExpenseRef} />
-      
+
       {error && <p className="text-danger">{error}</p>}
 
       <SubmitExpense />
     </form>
-  )
+  );
 }
 
-function ExpenseAmount({expenseamount, setExpenseAmount}) {
+function ExpenseAmount({ expenseamount, setExpenseAmount }) {
   return (
     <div className="form-group my-2">
-        <label htmlFor="expenseamount" className="form-label">Amount:</label>
-        <input type="text" className="form-control" id="expenseamount" placeholder="Enter Expense Amount" value={expenseamount} onChange={(event) => setExpenseAmount(event.target.value)} />
+      <label htmlFor="expenseamount" className="form-label">Amount:</label>
+      <input
+        type="text"
+        className="form-control"
+        id="expenseamount"
+        placeholder="Enter Expense Amount"
+        value={expenseamount}
+        onChange={(event) => setExpenseAmount(event.target.value)}
+      />
     </div>
   );
 }
 
-function ExpenseRef({expenseref, setExpenseRef}) {
+function ExpenseRef({ expenseref, setExpenseRef }) {
   return (
     <div className="form-group my-2">
-     <label htmlFor="expenseref" className="form-label">Reference:</label>
-     <input type="text" className="form-control" id="expenseref" placeholder="Enter Expense Reference" value={expenseref} onChange={(event) => setExpenseRef(event.target.value)} />
+      <label htmlFor="expenseref" className="form-label">Reference:</label>
+      <input
+        type="text"
+        className="form-control"
+        id="expenseref"
+        placeholder="Enter Expense Reference"
+        value={expenseref}
+        onChange={(event) => setExpenseRef(event.target.value)}
+      />
     </div>
   );
 }
