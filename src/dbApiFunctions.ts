@@ -84,7 +84,7 @@ export async function AddIncome(newIncome: Income){
 export async function getUserRecord(username: string ): Promise<  User  >{ 
   // might have to change the userID each time it is called for caching purposes
 
-  const result =  await db.select().from(usersTable).where(and(eq(usersTable.username,username)))
+  const result =  await db.select().from(usersTable).where(eq(usersTable.username,username))
   // returns array of  obj type
   const userRow = result[0];
 
@@ -109,6 +109,7 @@ export async function getExpenseRecord(expenseId: number): Promise< Expense >{
   else{
     expenseRow.cost = (expenseRow.cost as any) as string 
     const expense = new Expense(expenseRow)
+    expense.setExpenseId(expenseRow.id)
     return  expense 
   }
 
@@ -144,6 +145,7 @@ export async function getUsersExpenses(userId:number): Promise<Expense[]>{
     for(let i : number = 0; i < result.length;i++){
       let expenseRow = result[i]
       let expense = new Expense(expenseRow)
+      expense.setExpenseId(expenseRow.id)
       ExpenseClassResult.push(expense)
     }
     return ExpenseClassResult

@@ -20,7 +20,6 @@ const app: express.Application = express();
 export function hashPassword(password : string) {
   // Generate a random salt (16 bytes)
   const salt = crypto.randomBytes(16).toString('hex');
-
   
   const hash = crypto.scryptSync(password, salt, 64).toString('hex');
 
@@ -48,9 +47,7 @@ to minimise requests.
 const tokenDictionary : {[token:string] : User} = {}
 
 // hard coding auth token for testing
-const testingUser = new User("Elliot","Sainsbury","ejs","zfdf79@durham.ac.uk","800ad3e9ca7e4aacec36ebb92734e29d5958a401db5d678ab195aac27adfd89f4a9da0e8e8904be162a21a02a7260d2f912c6fe7206481ac10d0564ad78595b5","be39d374b4da7e7f3a01832f0e015a4f") 
-testingUser.setUserId(9)
-tokenDictionary["authTokenForTesting"] = testingUser
+
 
 
 
@@ -124,29 +121,34 @@ app.post('/api/updateExpense',async (req,res,next) => {
         if(!(token in tokenDictionary)){
             return res.status(401).json({error : "Unauthorised Access"})
         }
-        const User = tokenDictionary[token]
-        if(User.getUserId() != userId){
+        const user = tokenDictionary[token]
+        if(user.getUserId() != userId){
             return res.status(401).json({error: " Unauthorised Access"})
         }
 
 
         const expense = await dbAPI.getExpenseRecord(id)
-        if(expense.getExpensesName() != expensesName && expensesName){
+       if (expense.getUserId() !== user.getUserId()) {
+            return res.status(403).json({ error: "Forbidden" })
+        }
+
+
+        if(expense.getExpensesName() != expensesName && expensesName != null){
             expense.setExpensesName(expensesName)
         }
         if(expense.getCost() != cost && cost){
             expense.setCost(cost)
         }
-        if(expense.getDateAdded() != dateAdded && dateAdded){
+        if(expense.getDateAdded() != dateAdded && dateAdded != null){
             expense.setDateAdded(dateAdded)
         }
-        if(expense.getDescription() != description && description){
+        if(expense.getDescription() != description && description != null){
             expense.setDescription(description)
         }
         if(expense.getRecurring() != recurring && recurring != null){
             expense.setRecurring(recurring)
         }
-        if(expense.getRecurringFreq() != recurringFreq && recurringFreq){
+        if(expense.getRecurringFreq() != recurringFreq && recurringFreq != null){
             expense.setRecurringFreq(recurringFreq)
         }
         await dbAPI.updateExpenseRecord(expense)
@@ -177,26 +179,31 @@ app.post('/api/updateIncome',async (req,res,next) => {
         }
 
         const income = await dbAPI.getIncomeRecord(id)
-        if(income.getIncomeName() != incomeName && incomeName){
+          
+        if (income.getUserId() !== user.getUserId()) {
+            return res.status(403).json({ error: "Forbidden" })
+        }
+
+        if(income.getIncomeName() != incomeName && incomeName != null){
             income.setIncomeName(incomeName)
         }
-        if(income.getEarning() != earning && earning){
+        if(income.getEarning() != earning && earning != null){
             income.setEarning(earning)
         }
-        if(income.getDateAdded() != dateAdded && dateAdded){
+        if(income.getDateAdded() != dateAdded && dateAdded != null){
             income.setDateAdded(dateAdded)
         }
-        if(income.getDescription() != description && description){
+        if(income.getDescription() != description && description != null){
             income.setDescription(description)
         }
         if(income.getRecurring() != recurring && recurring != null){
             income.setRecurring(recurring)
         }
-        if(income.getRecurringFreq() != recurring && recurring){
+        if(income.getRecurringFreq() != recurringFreq && recurringFreq != null){
             income.setRecurringFreq(recurringFreq)
         }
         await dbAPI.updateIncomeRecord(income)
-        res.status(200).send({response : "succssfully updated income"})
+        res.status(200).send({response : "successfully updated income"})
 
 
     }
@@ -221,7 +228,7 @@ app.post("/api/addExpense", async (req,res,next) => {
 
         const newExpense = new Expense(req.body)
         await dbAPI.AddExpense(newExpense)
-        res.status(200).send({response : "succssfully added expense"})
+        res.status(200).send({response : "successfully added expense"})
 
 
     }
@@ -246,7 +253,7 @@ app.post("/api/addIncome", async (req,res ,next) =>{
 
         const newIncome = new Income(req.body)
         await dbAPI.AddIncome(newIncome)
-        res.status(200).send({response : "succssfully added income"})
+        res.status(200).send({response : "successfully added income"})
 
 
     }
@@ -316,6 +323,11 @@ app.delete("/api/deleteExpense",async (req,res,next) => {
         if( user.getUserId() != userId){
             return res.status(401).json({error : "Unauthorised Access"})
         }
+
+        const expense = await dbAPI.getExpenseRecord(ExpenseId)
+        if (expense.getUserId() !== user.getUserId()) {
+            return res.status(403).json({ error: "Forbidden" })
+        }
         await dbAPI.deleteExpenseRecord(ExpenseId)
         return res.status(200).json({message : "Successfully deleted the expense"})
 
@@ -336,6 +348,12 @@ app.delete("/api/deleteIncome",async (req,res,next) => {
         const user = tokenDictionary[token]
         if( user.getUserId() != userId){
             return res.status(401).json({error : "Unauthorised Access"})
+        }
+
+        const income = await dbAPI.getIncomeRecord(incomeId)
+          
+       if (income.getUserId() !== user.getUserId()) {
+            return res.status(403).json({ error: "Forbidden" })
         }
         await dbAPI.deleteIncomeRecord(incomeId)
         return res.status(200).json({message : "Successfully deleted the income"})
@@ -359,6 +377,9 @@ app.delete("/api/deleteUser",async (req,res,next) => {
             return res.status(401).json({error : "Unauthorised Access"})
         }
         await dbAPI.deleteUserRecord(userId)
+        
+        delete tokenDictionary[token]
+
         return res.status(200).json({message : "Successfully deleted the user"})
 
     }
