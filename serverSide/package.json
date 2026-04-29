@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "bootstrap": "^5.3.8",
+    "cors": "^2.8.6",
     "dotenv": "^17.4.1",
     "drizzle-orm": "^0.45.2",
     "express": "^5.2.1",
@@ -20,11 +21,10 @@
     "typescript": "^6.0.3"
   },
   "scripts": {
+    "start": "node expressSrc/server.js",
     "dev": "tsx src/main.ts",
     "expressStart": "tsx expressSrc/ExpressTest.ts",
     "dbAPI": "tsx src/dbAPIFunctions.ts",
     "tests": "jest"
-    
-  },
-  "type": "module"
+  }
 }

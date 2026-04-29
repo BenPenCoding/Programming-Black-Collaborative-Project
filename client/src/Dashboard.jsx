@@ -19,13 +19,13 @@ function Dashboard() {
   useEffect(() => {
   const fetchData = async () => {
     try {
-      const incomeRes = await fetch("/api/getUsersIncomes", {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/getUsersIncomes`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
       });
 
-      const expenseRes = await fetch("/api/getUsersExpenses", {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/getUsersExpenses`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -54,7 +54,7 @@ function Dashboard() {
         return;
       }
 
-      const response = await fetch("/api/newincome", {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/newincome`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -73,7 +73,7 @@ function Dashboard() {
         setIncomeRef("");
         setErrorIncome("");
 
-        const updated = await fetch("/api/getUsersIncomes", {
+        const updated = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/getUsersIncomes`, {
           headers: {
             "Authorization": `Bearer ${token}`
           }
@@ -100,7 +100,7 @@ function Dashboard() {
         return;
       }
 
-      const response = await fetch("/api/newexpense", {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/newexpense`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -119,7 +119,7 @@ function Dashboard() {
         setExpenseRef("");
         setErrorExpense("");
         
-        const updated = await fetch("/api/getUsersExpenses", {
+        const updated = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/getUsersExpenses`, {
           headers: {
             "Authorization": `Bearer ${token}`
           }

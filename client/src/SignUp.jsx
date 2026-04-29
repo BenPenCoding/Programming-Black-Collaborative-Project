@@ -20,8 +20,7 @@ function SignUp() {
         return;
       }
 
-      const response = await fetch("/api/signUp", {
-        method: "POST",
+const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/signUp`, {        method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
