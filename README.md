@@ -13,3 +13,6 @@ tsconfigfile root dir has been changed
 group files into backend and change correpsondeing file paths, 
 
 // testing, write up api documentation, look at compiling files in distro and deployment
+
+
+# https://main.d3i51ql36zytia.amplifyapp.com/
