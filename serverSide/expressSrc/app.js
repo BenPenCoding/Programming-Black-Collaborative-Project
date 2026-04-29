@@ -1,8 +1,5 @@
 "use strict";
 
-const cors = require("cors");
-app.use(cors());
-
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -59,6 +56,10 @@ const ClassDefinitions_1 = require("./ClassDefinitions");
 // Initialize the express engine
 // might have to wrap parse request in try catches
 const app = (0, express_1.default)();
+
+const cors = require("cors");
+app.use(cors());
+
 app.use(express_1.default.static('./../../client'));
 function hashPassword(password) {
     // Generate a random salt (16 bytes)
