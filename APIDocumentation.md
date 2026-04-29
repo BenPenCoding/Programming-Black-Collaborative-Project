@@ -1,37 +1,41 @@
-Remeber to update anchor Tages
-unsuccessfull response added 
+
 
 # API Documentation
 
-This document describes the Representation State Transfer Application Programming Interface which governs the interactions between the server and the webpage.
-
-[Status Codes and Error Messages](#status-codes-and-error-messages)
-[Authentication](#authentication)
-[Post Requests](#post-requests)
-[Get Requests](#get-requests)
-
+This document describes the REST API which governs the interactions between the server and the webpage.
+ 
+- [Status Codes and Error Messages](#status-codes-and-error-messages)
+- [Authentication](#authentication)
+- [Post Requests](#post-requests)
+- [Get Requests](#get-requests)
+- [Delete Requests](#delete-routes)
 ## Status Codes and Error Messages
 
 ### Status Codes
 
 | Status code | Description           |
 |-------------|-----------------------|
-| 200         | Successfull Response  |
+| 200         | successful Response  |
 | 400         | Bad Request           |
 | 500         | Internal Server Error |
 
 ### Error Messages
 
-| Status Code | Error Message | Reasons For Error Message |
+| Specific Status Code | Error Message | Reasons For Error Message |
 |-------------|---------------|---------------------------|
 | 400| Bad Request | Missing field in body, invalid email format |
 |401 | Unauthorised Access | Incorrect username or password, Missing or Incorrect Authentication Token |
+| 403 | Forbidden | Accessing another user's resources |
 | 500  | Internal Server Error | Database Failure | 
 
 
 ## Authentication
 
-When a user successfully logs in or signs up, an authetication token is generated. For all subsequent requests this token must be attached in the header part of the requests. 
+When a user successfully logs in or signs up, an authentication token is generated. For all subsequent requests to the server this token must be attached in the header part of the requests. 
+
+Authentication is not required for:
+- POST /api/login
+- POST /api/signUp
 
 ##### Example Header 
 ```
@@ -43,28 +47,13 @@ When a user successfully logs in or signs up, an authetication token is generate
 ```
 ## Post Requests
 
-[Log in ](#log-in)
-[Sign up](#sign-up)
-[Update Expense](#update-user-expense)
+- [Log in ](#log-in)
+- [Sign up](#sign-up)
+- [Update Expense](#update-user-expense)
+- [Update Income](#update-users-income)
+- [Add Expense ](#add-expense)
+- [Add Income ](#add-income)
 
-
-##### Example Successfull and Unsuccesfull Responses for Sign up and Log in 
-```
-{
-    "token" : "9c44f7a6a7079bb85bf46a4496ae7b4ad095f7c3fce312cad82c57c4bd574769e4829872961c6ece74e34729bdacfb0752ef229bc3e23327dbcc76d643b1242b"
-}
-
-Example Unsuccessfull Response = 
-{
-    "error" : "Internal Server Error"
-}
-```
-##### Example Unsuccessfull Reponse for other Routes
-```
-{
-    error : "Internal Server Error"
-}
-```
 
 ### Log in 
 Description - checks to see if the username and password are in the remote database, and if an account is found then an authentication token is generated. Otherwise an error message is sent, detailing the issue with the request or server.
@@ -83,30 +72,23 @@ All parameters are mandatory
 | password | string |
 
 
-##### Example Request Body
-
-
-```
-{
-    username : "apiUsername",
-    password : "apiPassword"
-}
-```
 
 #### Validation Rules
+
 both username and password cannot be empty otherwise a status 400 code will be sent as a response.
 
+[successful and Unsuccessful responses](#successful-and-unsuccessful-responses)
 
 
 ### Sign up
 
-Description - Attempts to successfully add a user to the database. If successfull, then an authentication token is generated. If unsuccessfull an error message will be sent detailing the issue with the request.
+Description - Attempts to successfully add a user to the database. If successful, then an authentication token is generated. If unsuccessful an error message will be sent detailing the issue with the request.
 
 Endpoint = "/api/signUp"
 
 HTTP Method - POST /api/signUp
 
-##### Request Body Paramters
+##### Request Body Parameters
 
 
 
@@ -114,7 +96,7 @@ HTTP Method - POST /api/signUp
 |-------|-----------|
 | firstName | string |
 | lastName | string |
-| userName | string |
+| username | string |
 | email     | string |
 | password | string |
 
@@ -122,24 +104,24 @@ HTTP Method - POST /api/signUp
  
 All fields are mandatory
 Email must be formatted correctly
-Email must be unqiue to each user
+Email must be unique to each user
+
+[successful and Unsuccessful responses](#successful-and-unsuccessful-responses)
 
 
-
-[Examples of a Successfull and Unsuccssful Reponses](#example-successful-response)
 
 ### Update User Expense
 
 Description - Allows a user to modify a pre-existing expense
 
-Endpoint = /api/updateExpense
+Endpoint = "/api/updateExpense"
 
 HTTP Method - POST /api/updateExpense
 
 
 ##### Request Body parameters
 
-set parameters to empty if unchanged, but all parameters are still required
+Fields may be set to null if unchanged.
 
 
 |Field | Data Type |
@@ -154,25 +136,20 @@ set parameters to empty if unchanged, but all parameters are still required
 | recurringFreq | number |
 
 
-###### Successfull Response 
-```
-{
-    response : "successfully updated expense"
-}
-```
+[successful and Unsuccessful responses](#successful-and-unsuccessful-responses)
+
 ### Update User's Income
 
 Description - Allows a user to modify a pre-existing Income
 
-Endpoint = /api/updateIncome
+Endpoint = "/api/updateIncome"
 
 HTTP Method - POST /api/updateIncome
 
 
 ##### Request Body parameters
 
-
-set parameters to empty or null if unchanged, but all parameters are required
+Fields may be set to null if unchanged.
 
 
 |Field | Data Type |
@@ -187,10 +164,10 @@ set parameters to empty or null if unchanged, but all parameters are required
 | recurringFreq | number |
 
 
-###### Successfull Response 
+###### successful Response 
 ```
 {
-    response : "successfully updated income"
+    "response" : "successfully updated income"
 }
 ```
 
@@ -217,10 +194,10 @@ HTTP Method - POST /api/addExpense
 |recurringFreq| number |
 
 
-###### Successfull Reponse 
+###### successful response 
 ```
 {
-    "resonse" : "succssfully added expense"
+    "response" : "successfully  added expense"
 }
 ```
 ### Add Income 
@@ -245,10 +222,10 @@ HTTP Method - POST /api/addIncome
 |recurringFreq| number |
 
 
-###### Successfull Reponse 
+###### successful response 
 ```
 {
-    "resonse" : "succssfully added expense"
+    "response" : "successfully added incomef"
 }
 ```
 
@@ -257,21 +234,27 @@ HTTP Method - POST /api/addIncome
 ## GET,Delete Routes
 
 Each Get request requires a correct authentication token in the header.
-[Correct Header Example](#example-header)
 
-###### Unsuccessfull Request for Get,Delete Requests 
+- [Correct Header Example](#example-header)
+- [Get Users Expenses](#get-users-expenses)
+- [Get Users Incomes](#get-users-incomes)
+- [Delete a Users Expense](#delete-expense)
+- [Delete a Users Income ](#delete-income)
+-[Delete User](#delete-user)
+
+###### Unsuccessful Request for Get and Delete Requests 
 ```
 {
-    error : "Internal Server Error "
+    "error" : "Internal Server Error "
 }
 ```
-### Get User's Expeneses
+### Get User's Expenses
 
 Returns an array of users expenses. 
 
 Endpoint= "/api/getUsersExpenses"
 
-HTTP Method - GET /api/getUsers/Expenses
+HTTP Method - GET /api/getUsersExpenses
 
 
 ##### Response Body Array of Expenses
@@ -287,28 +270,28 @@ HTTP Method - GET /api/getUsers/Expenses
 | recurringFreq | number |
 
 
-##### Example successfull Response
-```
-{
-      [
-      {
-        expense: 'account expense name',
-        cost: '100',
-        dateAdded: '2026-04-26T17:05:10.000Z',
-        description: 'Dummy account',
-        userId: 9,
-        expenseId: 2,
-        recurring: false,
-        recurringFreq: -1
-      }
-    ]
-}
-
+##### Example successful Response
 ```
 
+[
+    {
+        "expense": "account expense name",
+        "cost": '100',
+        "dateAdded": '2026-04-26T17:05:10.000Z',
+        "description": "Dummy account",
+        "userId": 9,
+        "expenseId": 2,
+        "recurring": false,
+        "recurringFreq": -1
+    }
+]
 
 
-[Unsuccessfull Response](#example-successfull-and-unsuccesfull-responses-for-get-Requests)
+```
+
+
+
+[Unsuccessful Response](#example-unsuccessful-response-for-other-routes)
 
 ### Get User's Incomes
 
@@ -334,32 +317,31 @@ HTTP Method = GET /api/getUsersIncomes
 
 
 ```
-Example successfull Response
-{
-      [
-      {
-        incomeName: 'account income name',
-        earning: '100',
-        userId: 9,
+Example successful Response
 
-        dateAdded: '2026-04-26T17:05:10.000Z',
-        description: 'Dummy income',
-        incomeId: 2,
-        recurring: false,
-        recurringFreq: -1
-      }
-    ]
-}
+[
+    {
+        "incomeName": "account income name",
+        "earning": '100',
+        "userId": 9,
+        "dateAdded": "2026-04-26T17:05:10.000Z",
+        "description": "Dummy income",
+        "incomeId": 2,
+        "recurring": false,
+        "recurringFreq": -1
+    }
+]
+
 ```
 
-[Unsuccessfull Response](#unsuccessfull-request-for-getdelete-requests)
+[Unsuccessful Response](#unsuccessful-request-for-getdelete-requests)
 
 
-## Delete Routes 
+## Delete Requests 
 
 ### Delete Expense
 
-Description - Deletes a users expense permanately, requires usersId as well for an additional layer of security
+Description - Deletes a users expense permanently, requires userId as well for an additional layer of security
 
 Endpoint = "/api/deleteExpense"
 
@@ -372,10 +354,10 @@ HTTP Method - DELETE api/deleteExpense
 |userId | number |
 | expenseId | number |
 
-Example Successfull Response 
+Example successful Response 
 ```
 {
-    "response " : "Successfully deleted the expense"
+    "response" : "successfully deleted the expense"
 
 }
 ```
@@ -383,7 +365,7 @@ Example Successfull Response
 
 ### Delete Income
 
-Description - Deletes a users income permanately, requires usersId as well for an additional layer of security
+Description - Deletes a users income permanently, requires userId as well for an additional layer of security
 
 Endpoint = "/api/deleteIncome"
 
@@ -396,17 +378,17 @@ HTTP Method - DELETE api/deleteIncome
 |userId | number |
 | incomeId | number |
 
-Example Successfull Response 
+Example successful Response 
 ```
 {
-    "response " : "Successfully deleted the income"
+    "response" : "successfully deleted the income"
 
 }
 ```
 
-### Delete Expense
+### Delete User
 
-Description - Deletes a user  permanately, 
+Description - Deletes a user  permanently, 
 
 Endpoint = "/api/deleteUser"
 
@@ -419,10 +401,32 @@ HTTP Method - DELETE api/deleteUser
 |userId | number |
 
 
-Example Successfull Response 
+Example successful Response 
 ```
 {
-    "response " : "Successfully deleted the user"
+    "response" : "successfully deleted the user"
 
+}
+```
+
+
+## successful and Unsuccessful Responses 
+
+
+##### Example successful and Unsuccesful Responses for Sign up and Log in 
+```
+{
+    "token" : "9c44f7a6a7079bb85bf46a4496ae7b4ad095f7c3fce312cad82c57c4bd574769e4829872961c6ece74e34729bdacfb0752ef229bc3e23327dbcc76d643b1242b"
+}
+
+Example Unsuccessful Response = 
+{
+    "error" : "Internal Server Error"
+}
+```
+##### Example Unsuccessful response for other Routes
+```
+{
+    "error" : "Internal Server Error"
 }
 ```

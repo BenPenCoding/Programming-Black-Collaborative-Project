@@ -315,7 +315,7 @@ app.get('/api/getUsersIncomes',async(req,res,next) =>{
 app.delete("/api/deleteExpense",async (req,res,next) => {
     try{
         const token = req.headers.token as string
-        const {userId,ExpenseId} = req.body
+        const {userId,expenseId} = req.body
         if(!(token in tokenDictionary )){
             return res.status(401).json({error : "Unauthorised Access"})
         }
@@ -324,11 +324,11 @@ app.delete("/api/deleteExpense",async (req,res,next) => {
             return res.status(401).json({error : "Unauthorised Access"})
         }
 
-        const expense = await dbAPI.getExpenseRecord(ExpenseId)
+        const expense = await dbAPI.getExpenseRecord(expenseId)
         if (expense.getUserId() !== user.getUserId()) {
             return res.status(403).json({ error: "Forbidden" })
         }
-        await dbAPI.deleteExpenseRecord(ExpenseId)
+        await dbAPI.deleteExpenseRecord(expenseId)
         return res.status(200).json({message : "Successfully deleted the expense"})
 
     }
