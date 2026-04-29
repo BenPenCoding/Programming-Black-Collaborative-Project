@@ -3,6 +3,7 @@ import PageHeader from './PageHeader';
 import LogIn from './LogIn';
 import SignUp from './SignUp';
 import Dashboard from './Dashboard';
+import ProtectedRoute from './ProtectedRoute';
 
 function App() {
   return (
@@ -13,7 +14,8 @@ function App() {
         <Routes>
           <Route path="/" element={<LogIn />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         </Routes>
       </div>
     </BrowserRouter>
