@@ -66,7 +66,3 @@ function validateEmail(inputEmail : string): boolean{ // basic email validation
 console.log(validateEmail("zfdf79@durham.ac.uk"))
 */
 
-import app from "./app";
-
-
-const authTokenForTesting = "authTokenForTesting"

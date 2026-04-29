@@ -1,6 +1,5 @@
 import { pgTable, text, integer, timestamp,numeric,boolean } from "drizzle-orm/pg-core";
 
-// look at foreign key on delete 
 
 // Define the expense table schema
 
@@ -8,9 +7,9 @@ import { pgTable, text, integer, timestamp,numeric,boolean } from "drizzle-orm/p
 
 // Define the user table schema
 export const usersTable = pgTable('users', {
-  userId: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+  id: integer('id').primaryKey().generatedAlwaysAsIdentity(), //db itself generates pk
   username: text('user_name').notNull(), // ts convention and sql convention 
-  firstName: text('first_name').notNull(), // ts convention and sql convention 
+  firstName: text('first_name').notNull(), // 
   lastName: text('last_name').notNull(),
   email: text('email').notNull().unique(), 
   hashedPassword: text('hashedPassword').notNull(),
@@ -18,9 +17,9 @@ export const usersTable = pgTable('users', {
 
 });
 export const expensesTable = pgTable('expenses', {
-  userId: integer('user_id').references(() => usersTable.userId).notNull(),
-  expenseId: integer('id').primaryKey().generatedAlwaysAsIdentity(), 
-  expenseName: text('expenses_name').notNull(), // ts convention and sql convention 
+  userId: integer('user_id').references(() => usersTable.id,{onDelete : "cascade"}).notNull(),
+  id: integer('id').primaryKey().generatedAlwaysAsIdentity(), 
+  name: text('expenses_name').notNull(), // ts convention and sql convention 
   dateAdded: timestamp('date_added').notNull(),
   description: text('description').notNull(),
   cost:  numeric('cost').notNull(),
@@ -30,12 +29,14 @@ export const expensesTable = pgTable('expenses', {
 });
 
 export const incomesTable = pgTable('incomes',{
-  userId: integer('user_id').references(() => usersTable.userId).notNull(),
-  incomeName: text('expenses_name').notNull(), // ts convention and sql convention 
-  incomeId: integer('id').primaryKey().generatedAlwaysAsIdentity(), 
+  userId: integer('user_id').references(() => usersTable.id,{onDelete : "cascade"}).notNull(),
+  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+  name: text('incomes_names').notNull(), // ts convention and sql convention 
   earning:  numeric('cost').notNull(),
   dateAdded: timestamp('date_added').notNull(),
-
+  description: text('description').notNull(),
+  recurring: boolean('recurring').notNull(),
+  recurringFreq: integer('recurringFreq').notNull()
 
 })
 

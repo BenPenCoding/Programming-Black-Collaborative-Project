@@ -5,6 +5,8 @@ import { usersTable,expensesTable,incomesTable } from './db/schema';
 import {User,Expense,Income} from '../expressSrc/ClassDefinitions'
 
   
+// I encountered issues when trying to group these under one function so had to leave them as separate
+
 const db = drizzle(process.env.DATABASE_URL!); // removed export as should only be used internally
 
 export async function AddUser(newUser: User){
@@ -26,7 +28,7 @@ export async function AddUser(newUser: User){
   }
   else{
     console.log("Successfully added user");
-    newUser.setUserId(newUserRow.userId) 
+    newUser.setUserId(newUserRow.id) 
 
   }
   
@@ -36,7 +38,7 @@ export async function AddExpense(newExpense:Expense){
   const expenseEntry: typeof expensesTable.$inferInsert = {
     description : newExpense.getDescription(),
     userId: newExpense.getUserId(),
-    expenseName : newExpense.getExpensesName(),
+    name : newExpense.getExpensesName(),
     dateAdded : newExpense.getDateAdded(),
     cost : newExpense.getCost().toString(),
     recurring : newExpense.getRecurring(),
@@ -52,7 +54,7 @@ export async function AddExpense(newExpense:Expense){
   }
   else{
     console.log("Successfully added expense")
-    newExpense.setExpenseId(newExpenseRow.expenseId)
+    newExpense.setExpenseId(newExpenseRow.id)
   }
 }
 
@@ -60,8 +62,11 @@ export async function AddIncome(newIncome: Income){
   const incomeEntry : typeof incomesTable.$inferInsert = {
     userId : newIncome.getUserId(),
     dateAdded : newIncome.getDateAdded(),
-    incomeName : newIncome.getIncomeName(),
-    earning : newIncome.getEarning().toString()
+    name : newIncome.getIncomeName(),
+    earning : newIncome.getEarning().toString(),
+    description : newIncome.getDescription(),
+    recurring : newIncome.getRecurring(),
+    recurringFreq : newIncome.getRecurringFreq()
   }
   const result = await db.insert(incomesTable).values(incomeEntry).returning();
   const newIncomeRow = result[0];
@@ -70,7 +75,7 @@ export async function AddIncome(newIncome: Income){
   }
   else{
     console.log("Successfully added income")
-    newIncome.setIncomeId(newIncomeRow.incomeId)
+    newIncome.setIncomeId(newIncomeRow.id)
   }
 }
 
@@ -79,7 +84,7 @@ export async function AddIncome(newIncome: Income){
 export async function getUserRecord(username: string ): Promise<  User  >{ 
   // might have to change the userID each time it is called for caching purposes
 
-  const result =  await db.select().from(usersTable).where(and(eq(usersTable.username,username)))
+  const result =  await db.select().from(usersTable).where(eq(usersTable.username,username))
   // returns array of  obj type
   const userRow = result[0];
 
@@ -87,8 +92,8 @@ export async function getUserRecord(username: string ): Promise<  User  >{
     throw new Error("User not in table")
   }
   else{
-    const user = new User(userRow.username,userRow.firstName,userRow.lastName,userRow.email,userRow.hashedPassword,userRow.salt);
-    user.setUserId(userRow.userId)
+    const user = new User(userRow.firstName,userRow.lastName,userRow.username,userRow.email,userRow.hashedPassword,userRow.salt);
+    user.setUserId(userRow.id)
     return user
   }
 
@@ -96,14 +101,15 @@ export async function getUserRecord(username: string ): Promise<  User  >{
 
 // returns Expense obj from an expenseId
 export async function getExpenseRecord(expenseId: number): Promise< Expense >{
-  const result = await db.select().from(expensesTable).where(eq(expensesTable.expenseId,expenseId));
+  const result = await db.select().from(expensesTable).where(eq(expensesTable.id,expenseId));
   const expenseRow = result[0];
   if(!expenseRow){
     throw new Error("Expense not in table ")
   }
   else{
-    const expense = new Expense(expenseRow.expenseName,(expenseRow.cost as any) as  number ,expenseRow.dateAdded,expenseRow.description,expenseRow.userId,expenseRow.recurring,expenseRow.recurringFreq) 
-    expense.setExpenseId(expenseRow.expenseId)
+    expenseRow.cost = (expenseRow.cost as any) as string 
+    const expense = new Expense(expenseRow)
+    expense.setExpenseId(expenseRow.id)
     return  expense 
   }
 
@@ -111,14 +117,14 @@ export async function getExpenseRecord(expenseId: number): Promise< Expense >{
 
 
 export async function getIncomeRecord(incomeId: number): Promise< Income >{
-  const result = await db.select().from(incomesTable).where(eq(incomesTable.incomeId,incomeId));
+  const result = await db.select().from(incomesTable).where(eq(incomesTable.id,incomeId));
   const incomeRow = result[0];
   if(!incomeRow){
     throw new Error("Expense not in table ")
   }
   else{
-    const income = new Income(incomeRow.incomeName,(incomeRow.earning as any ) as number,incomeRow.userId,incomeRow.dateAdded) 
-    income.setIncomeId(incomeRow.incomeId)
+    const income = new Income(incomeRow)
+    income.setIncomeId(incomeRow.id)
     return  income 
   }  
 
@@ -128,7 +134,7 @@ export async function getIncomeRecord(incomeId: number): Promise< Income >{
 export async function getUsersExpenses(userId:number): Promise<Expense[]>{
   const result = await db.select().from(expensesTable).where(eq(expensesTable.userId,userId))
   if(result.length == 0){
-    throw new Error("")
+    return []
 
   }
   else{
@@ -138,8 +144,8 @@ export async function getUsersExpenses(userId:number): Promise<Expense[]>{
     console.log(result.length)
     for(let i : number = 0; i < result.length;i++){
       let expenseRow = result[i]
-      let expense = new Expense(expenseRow.expenseName,(expenseRow.cost as any) as  number ,expenseRow.dateAdded,expenseRow.description,expenseRow.userId,expenseRow.recurring,expenseRow.recurringFreq) 
-      expense.setExpenseId(expenseRow.expenseId)
+      let expense = new Expense(expenseRow)
+      expense.setExpenseId(expenseRow.id)
       ExpenseClassResult.push(expense)
     }
     return ExpenseClassResult
@@ -148,7 +154,7 @@ export async function getUsersExpenses(userId:number): Promise<Expense[]>{
 export async function getUsersIncomes(userId:number): Promise<Income[]>{
   const result = await db.select().from(incomesTable).where(eq(incomesTable.userId,userId))
   if(result.length == 0){
-    throw new Error("")
+    return []
 
   }
   else{
@@ -157,13 +163,67 @@ export async function getUsersIncomes(userId:number): Promise<Income[]>{
     const incomeClassResult = []
     for(let i : number = 0; i < result.length;i++){
       let incomeRow = result[i]
-      let income = new Income(incomeRow.incomeName,(incomeRow.earning as any ) as number,incomeRow.userId,incomeRow.dateAdded) 
-      income.setIncomeId(incomeRow.incomeId)
+      let income = new Income(incomeRow)
+      income.setIncomeId(incomeRow.id)
       incomeClassResult.push(income)
     }
     return incomeClassResult
   }
 }
+
+
+export async function updateExpenseRecord(expense : Expense){
+  await db.update(expensesTable)
+  .set(
+    {
+    description : expense.getDescription(),
+    userId: expense.getUserId(),
+    name : expense.getExpensesName(),
+    dateAdded : expense.getDateAdded(),
+    cost : expense.getCost().toString(),
+    recurring : expense.getRecurring(),
+    recurringFreq : expense.getRecurringFreq()
+
+  }
+  )
+  .where(eq(expensesTable.id, expense.getExpenseId()));
+  
+
+
+}
+export async function updateIncomeRecord(income : Income){
+  await db.update(incomesTable)
+  .set(
+  {
+    userId : income.getUserId(),
+    dateAdded : income.getDateAdded(),
+    name : income.getIncomeName(),
+    earning : income.getEarning().toString(),
+    description : income.getDescription(),
+    recurring : income.getRecurring(),
+    recurringFreq : income.getRecurringFreq()
+  }
+  )
+  .where(eq(incomesTable.id, income.getIncomeId()));
+  
+
+
+}
+
+
+
+// I encountered issues when trying to group these under one function so had to leave them as separate
+
+export async function deleteExpenseRecord(expenseID : number){
+  await db.delete(expensesTable).where(eq(expensesTable.id,expenseID))
+}
+export async function deleteIncomeRecord(incomeID : number){
+  await db.delete(incomesTable).where(eq(incomesTable.id,incomeID))
+}
+export async function deleteUserRecord(userID : number){
+  await db.delete(usersTable).where(eq(usersTable.id,userID))
+}
+
 
 
 /*

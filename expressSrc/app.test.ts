@@ -3,10 +3,26 @@ import app from "./app";
 import {verifyPassword} from "./app";
 import request from "supertest";
 
-/**
- * These tests take a long time to execute so I have add .skip(),remove this to test them properly
- * Also all the data i am using was created specifically for testing, and was deleted after I finished testing
- */
+
+
+let authToken : string;
+let testUserId: number;
+beforeAll(async () => {
+    // create user
+    const signUpResponse = await request(app)
+        .post("/api/signUp")
+        .send({
+            firstName: "Test",
+            lastName: "User",
+            username: "jestUser",
+            email: "jestUser@durham.ac.uk",
+            password: "DBPass123"
+        });
+
+    
+    authToken = signUpResponse.body.token;
+});
+
 describe("Testing non-route functions",() =>{
     test.skip("Testing hashing function",() =>{
         // tested with a working version of scryptSync
@@ -20,8 +36,8 @@ describe("Testing the login service",() =>{
         return request(app)
         .post("/api/login")
         .send({
-            username: "ejs",
-            password: "DBPass"
+            username: "jestUser",
+            password: "DBPass123"
         })
         .expect(200)
     })
@@ -55,20 +71,7 @@ describe("Testing the login service",() =>{
 
 })
 describe("Testing the sign up service",() =>{
-    test.skip('POST api/signUp succeeds with correct username, password, email, first name, last name',() => {
-        return request(app)
-        .post("/api/signUp")
-        .send({
-            firstName : "Account 2 Firstname",
-            lastName : "Account 2 Lastname",
-            username: "ejsAccount2",
-            email : "account2@durham.ac.uk",
-            password: "DBPassAccount2",
 
-            
-        })
-        .expect(200)
-    })
     test.skip('POST api/login rejects empty fields ',() =>{
         return request(app).post("/api/signUp")
         .send({
@@ -101,10 +104,17 @@ describe("Testing the sign up service",() =>{
 
 })
 
+
+
+//////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 describe("Testing the get Users Expense service",() =>{
 
     // Had to hard code an auth token as cached system does not work with server not being run
-    const authToken = "authTokenForTesting"
+    
     test.skip('POST api/getUsersExpenses succeeds with correct token and returns expenses', () => {
         return request(app)
         .get("/api/getUsersExpenses")
@@ -113,6 +123,17 @@ describe("Testing the get Users Expense service",() =>{
         
     });
     
+})
+describe("Testing the get Users income service",() =>{
+
+    // Had to hard code an auth token as cached system does not work with server not being run
     
- 
+    test.skip('POST api/getUsersIncomes succeeds with correct token and returns expenses', () => {
+        return request(app)
+        .get("/api/getUsersExpenses")
+        .set("token", authToken)
+        .expect(200)
+        
+    });
+    
 })

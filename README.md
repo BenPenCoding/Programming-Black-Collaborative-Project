@@ -10,8 +10,9 @@ npx tsx $filename = quick compile ts files
 Jest test
 tsconfigfile root dir has been changed
 
-group files into backend and change correpsondeing file paths, add income recurring payments, look at jest config file
+group files into backend and change correpsondeing file paths, 
 
-// Look at reducing dbapi functions
+// testing, write up api documentation, look at compiling files in distro and deployment
 
-// testing, write up api documentation
+
+# https://main.d3i51ql36zytia.amplifyapp.com/

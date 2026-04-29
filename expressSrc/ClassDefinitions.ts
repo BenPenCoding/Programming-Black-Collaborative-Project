@@ -7,7 +7,7 @@ export class User{
     private username: string;
     private email: string;
     private hashedPassword: string; // hashed 
-    private userId: number; // primary key 
+    private id: number; // primary key 
     private salt : string
 
     public constructor(firstName : string , lastName : string,username:string, email : string, password : string,salt : string ){
@@ -15,13 +15,13 @@ export class User{
         this.lastName = lastName;
         this.username = username;
         this.hashedPassword = password;
-        this.userId  = 0;
+        this.id  = 0;
         this.salt = salt
         if(this.validateEmail(email)){
             this.email = email
         }
         else{
-            throw new Error("Invalid Email")
+            throw new Error("invalid Email")
         }
 
     }   
@@ -67,11 +67,11 @@ export class User{
         
     }
     public getUserId() : number{
-        return this.userId 
+        return this.id 
     }
     public setUserId(newUserId:number){
 
-        this.userId = newUserId 
+        this.id = newUserId 
     }
     private validateEmail(inputEmail : string): boolean{ // basic email validation
         const regex : RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
@@ -89,25 +89,25 @@ export class User{
     }
 
 }
-
-export class Expense{
-    // might have to recurring part
-    private expensesName: string;
-    private cost: number;
-    private dateAdded: Date;
-    private description: string;
-    private userId: number; // foreign key
-    private expenseId : number; //primary key
-    private recurring : boolean
-    private recurringFreq: number; 
-
-    public constructor(expensesName: string, cost : number, dateAdded : Date, description : string, userId : number,recurring: boolean,recurringFreq?: number ){
-        this.expensesName = expensesName
-        this.cost = cost
+class cashFlow {
+    
+    
+    protected name: string;
+    protected cashFlowInstance: string;
+    protected dateAdded: Date;
+    protected description: string;
+    protected userId: number; // foreign key
+    protected id : number; //primary key
+    protected recurring : boolean
+    protected recurringFreq: number;
+    
+    public constructor(name: string, cashFlowInstance : string, dateAdded : Date, description : string, userId : number,recurring: boolean,recurringFreq?: number ){
+        this.name = name
+        this.cashFlowInstance = cashFlowInstance
         this.dateAdded = dateAdded
         this.description = description
         this.userId = userId
-        this.expenseId = 0
+        this.id = 0
         this.recurring = recurring
         if(recurringFreq){
             this.recurringFreq = recurringFreq
@@ -116,18 +116,41 @@ export class Expense{
             this.recurringFreq = -1
         }
     }
+
+    
+
+} 
+export class Expense extends cashFlow{
+    
+
+    public constructor({name, cost , dateAdded , description , userId,recurring,recurringFreq} :
+        {
+           name  : string
+            cost : string
+            dateAdded : Date
+            description : string
+            userId : number
+            recurring : boolean
+            recurringFreq : number
+
+            
+        }
+    ){
+        super(name ,cost,dateAdded,description,userId,recurring,recurringFreq)
+       
+    }
     public getExpensesName() : string{
-        return this.expensesName
+        return this.name
     }
     public setExpensesName(input: string){
-        this.expensesName = input;
+        this.name = input;
         
     }
-    public getCost() : number{
-        return this.cost
+    public getCost() : string{
+        return this.cashFlowInstance
     }
-    public setCost(input: number){
-        this.cost = input;
+    public setCost(input: string){
+        this.cashFlowInstance = input;
         
     }
     public getDateAdded() : Date{
@@ -151,10 +174,10 @@ export class Expense{
         this.userId = newUserId
     }
     public getExpenseId(): number{
-        return this.expenseId
+        return this.id
     }
     public setExpenseId(newExpenseId:number){
-        this.expenseId = newExpenseId
+        this.id = newExpenseId
     }
     public getRecurring() : boolean{
         return this.recurring
@@ -168,44 +191,45 @@ export class Expense{
     public setRecurringFreq(newRecurringFreq : number){
         this.recurringFreq = newRecurringFreq
     }
-
+    
 
 }
 
-export class Income{
+export class Income extends cashFlow{
 
-    private incomeName: string;
-    private incomeId: number;
-    private earning: number;
-    private userId: number;
-    private dateAdded: Date;
+  
 
-    public constructor(name:string,earning:number,userId:number,dateAdded:Date){
-        this.incomeName = name
-        this.incomeId = 0
-        this.earning = earning
-        this.userId = userId
-        this.dateAdded = dateAdded
-    }
+    public constructor({name,earning,userId,dateAdded,description,recurring,recurringFreq} :
+        {
+            name:string,
+            earning:string,
+            userId:number,
+            dateAdded:Date,
+            description : string,
+            recurring : boolean,
+            recurringFreq : number}
+        ){
+        super(name,earning,dateAdded,description,userId,recurring,recurringFreq)
+    } 
 
     public getIncomeName() : string{
-        return this.incomeName
+        return this.name
 
     }
     public setIncomeName(newName:string){
-        this.incomeName = newName
+        this.name = newName
     }
     public getIncomeId() : number{
-        return this.incomeId
+        return this.id
     }
     public setIncomeId(newIncomeId : number){
-         this.incomeId = newIncomeId
+         this.id = newIncomeId
     }
-    public getEarning() : number{
-        return this.earning
+    public getEarning() : string{
+        return this.cashFlowInstance
     }
-    public setEarning(newEarning : number){
-        this.earning = newEarning
+    public setEarning(newEarning : string){
+        this.cashFlowInstance = newEarning
 
     }
     public getUserId() : number{
@@ -220,5 +244,24 @@ export class Income{
     public setDateAdded(newDate: Date){
         this.dateAdded = newDate
     }
+    public getDescription() : string {
+        return this.description
+    }
+    public setDescription(newDescription : string){
+        this.description = newDescription
+    }
+    public getRecurring() : boolean{
+        return this.recurring
+    }
+    public setRecurring(newRecurring : boolean){
+        this.recurring = newRecurring
+    }
+    public getRecurringFreq() : number{
+        return this.recurringFreq
+    }
+    public setRecurringFreq(newRecurringFreq : number){
+        this.recurringFreq = newRecurringFreq
+    }
+
 }
 
