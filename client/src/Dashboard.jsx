@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 function Dashboard() {
@@ -8,6 +8,42 @@ function Dashboard() {
   const [expenseref, setExpenseRef] = useState("");
   const [errorIncome, setErrorIncome] = useState("");
   const [errorExpense, setErrorExpense] = useState("");
+  const [incomes, setIncomes] = useState([]);
+  const [expenses, setExpenses] = useState([]);
+  const token = localStorage.getItem("token");
+
+  const totalIncome = incomes.reduce((sum, i) => sum + Number(i.earning || 0), 0);
+  const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.cost || 0), 0);
+  const balance = totalIncome - totalExpenses;
+
+  useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const incomeRes = await fetch("/api/getUsersIncomes", {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      const expenseRes = await fetch("/api/getUsersExpenses", {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      const incomeData = await incomeRes.json();
+      const expenseData = await expenseRes.json();
+
+      if (incomeRes.ok) setIncomes(incomeData);
+      if (expenseRes.ok) setExpenses(expenseData);
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchData();
+}, [token]);
 
   const handleNewIncome = async (event) => {
     event.preventDefault();
@@ -21,7 +57,8 @@ function Dashboard() {
       const response = await fetch("/api/newincome", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({
           incomeamount,
@@ -33,7 +70,17 @@ function Dashboard() {
 
       if (response.ok) {
         setIncomeAmount("");
-        setIncomeRef("");  
+        setIncomeRef("");
+        setErrorIncome("");
+
+        const updated = await fetch("/api/getUsersIncomes", {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        const data = await updated.json();
+        setIncomes(data);
+
       } else {
         setErrorIncome(respNewIncome.message);
       }
@@ -56,7 +103,8 @@ function Dashboard() {
       const response = await fetch("/api/newexpense", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({
           expenseamount,
@@ -68,7 +116,17 @@ function Dashboard() {
 
       if (response.ok) {
         setExpenseAmount("");
-        setExpenseRef("");      
+        setExpenseRef("");
+        setErrorExpense("");
+        
+        const updated = await fetch("/api/getUsersExpenses", {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        const data = await updated.json();
+        setExpenses(data);
+
       } else {
         setErrorExpense(respNewExpense.message);
       }
@@ -82,28 +140,33 @@ function Dashboard() {
   return (
     <div className="container-fluid p-5">
         <div className="row g-5">
-            <div className="col-4"><Summary /></div>
-            <div className="col-4"><Income incomeamount={incomeamount} setIncomeAmount={setIncomeAmount} incomeref={incomeref} setIncomeRef={setIncomeRef} handleNewIncome={handleNewIncome} error={errorIncome} /></div>
-            <div className="col-4"><Expenses expenseamount={expenseamount} setExpenseAmount={setExpenseAmount} expenseref={expenseref} setExpenseRef={setExpenseRef} handleNewExpense={handleNewExpense} error={errorExpense} /></div>
+            <div className="col-4"><Summary balance={balance} /></div>
+            <div className="col-4"><Income incomes={incomes} incomeamount={incomeamount} setIncomeAmount={setIncomeAmount} incomeref={incomeref} setIncomeRef={setIncomeRef} handleNewIncome={handleNewIncome} error={errorIncome} /></div>
+            <div className="col-4"><Expenses expenses={expenses} expenseamount={expenseamount} setExpenseAmount={setExpenseAmount} expenseref={expenseref} setExpenseRef={setExpenseRef} handleNewExpense={handleNewExpense} error={errorExpense} /></div>
         </div>
     </div>
   );
 }
 
-function Summary() {
+function Summary({balance}) {
   return (
     <div className="container p-5 my-5 border text-center">
      <h1 className="my-3">Balance</h1>
-     <p>£1500</p>
+     <p>£{balance}</p>
     </div>
   )
 }
 
-function Income({incomeamount, setIncomeAmount, incomeref, setIncomeRef, handleNewIncome, error}) {
+function Income({incomes, incomeamount, setIncomeAmount, incomeref, setIncomeRef, handleNewIncome, error}) {
   return (
     <div className="container p-5 my-5 border text-center">
-     <h1 className="my-3">Income</h1>
-     <p>£1500</p>
+      <h1 className="my-3">Income</h1>
+      {incomes.map((inc) => (
+        <div key={inc.incomeId}>
+          <p>{inc.incomeName} - £{inc.earning}</p>
+        </div>
+      ))}
+
      <NewIncome incomeamount={incomeamount} setIncomeAmount={setIncomeAmount} incomeref={incomeref} setIncomeRef={setIncomeRef} handleNewIncome={handleNewIncome} error={error} />
     </div>
   )
@@ -147,11 +210,17 @@ function SubmitIncome() {
   );
 }
 
-function Expenses({expenseamount, setExpenseAmount, expenseref, setExpenseRef, handleNewExpense, error}) {
+function Expenses({expenses, expenseamount, setExpenseAmount, expenseref, setExpenseRef, handleNewExpense, error}) {
   return (
     <div className="container p-5 my-5 border text-center">
      <h1 className="my-3">Expenses</h1>
-     <p>£1500</p>
+
+     {expenses.map((exp) => (
+        <div key={exp.expenseId}>
+          <p>{exp.expense} - £{exp.cost}</p>
+        </div>
+      ))}
+
      <NewExpense expenseamount={expenseamount} setExpenseAmount={setExpenseAmount} expenseref={expenseref} setExpenseRef={setExpenseRef} handleNewExpense={handleNewExpense} error={error} />
     </div>
   )
