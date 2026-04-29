@@ -24,6 +24,7 @@
     "expressStart": "tsx expressSrc/ExpressTest.ts",
     "dbAPI": "tsx src/dbAPIFunctions.ts",
     "tests": "jest"
+    
   },
   "type": "module"
 }

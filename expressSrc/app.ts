@@ -14,7 +14,7 @@ import {User,Expense, Income} from './ClassDefinitions';
 
 const app: express.Application = express();
 
-
+app.use(express.static('./client'));
 
 
 export function hashPassword(password : string) {
