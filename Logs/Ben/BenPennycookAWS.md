@@ -78,6 +78,8 @@ Having learned this important information I was able to finally deploy our app.
 
 ## Entry 4 - Deploying our app
 
+# 'Amplify'-ing our frontend
+
 By opening the Amplify console, progress became very smooth. Amazon has made their services essentially foolproof so that anyone can use them. In order to deploy our app, all I had to do was follow these steps:
 
 > Connect Amplify to the GitHub repository, choose a branch, configure build settings, and finally, deploy.
@@ -115,6 +117,8 @@ Because of how strong and easy to use this service is, it costs a lot more than 
 Following a set of steps somewhat resembling those of the Amplify process:
 
 > Upload a zip file of the compiled backend server to Beanstalk, configure build settings, create service roles, and finally, deploy.
+
+### Service roles?
 
 Service roles were a new concept to me. Google described them as 'roles assumed by AWS services that perform actions on your behalf, such as accessing resources, managing infrastructure, or creating logs'. Although the service roles screen rather confused me:
 
