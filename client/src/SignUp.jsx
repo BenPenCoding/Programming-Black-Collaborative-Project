@@ -54,7 +54,7 @@ function SignUp() {
         
         <form onSubmit={handleSignUp}>
           <Firstname firstName={firstName} setFirstName={setFirstName} />
-          <lastName lastName={lastName} setLastName={setLastName} />
+          <LastName lastName={lastName} setLastName={setLastName} />
           <Email email={email} setEmail={setEmail} />
           <Username username={username} setUsername={setUsername} />
           <Password password={password} setPassword={setPassword} />
