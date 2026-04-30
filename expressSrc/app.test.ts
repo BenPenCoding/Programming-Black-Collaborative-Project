@@ -1,5 +1,5 @@
 import { response } from "express";
-import app from "./app";
+import app, { hashPassword } from "./app";
 import {verifyPassword} from "./app";
 import request from "supertest";
 
@@ -7,6 +7,7 @@ import request from "supertest";
 
 let authToken : string;
 let testUserId: number;
+/*
 beforeAll(async () => {
     // create user
     const signUpResponse = await request(app)
@@ -22,6 +23,21 @@ beforeAll(async () => {
     
     authToken = signUpResponse.body.token;
 });
+*/
+beforeAll(async () => {
+    // create user
+    const loginResponse = await request(app)
+        .post("/api/login")
+        .send({
+            username : "jestUser",
+            password : "DBPass123"
+        });
+
+    
+    authToken = loginResponse.body.token;
+    testUserId = loginResponse.body.userId
+});
+
 
 describe("Testing non-route functions",() =>{
     test.skip("Testing hashing function",() =>{
@@ -32,7 +48,7 @@ describe("Testing non-route functions",() =>{
 
 })
 describe("Testing the login service",() =>{
-    test.skip('POST api/login succeeds with correct username and password',() => {
+    test.skip('POST /api/login succeeds with correct username and password',() => {
         return request(app)
         .post("/api/login")
         .send({
@@ -41,7 +57,7 @@ describe("Testing the login service",() =>{
         })
         .expect(200)
     })
-    test.skip('POST api/login rejects empty username and password ',() =>{
+    test.skip('POST /api/login rejects empty username and password ',() =>{
         return request(app).post("/api/login")
         .send({
             username : "",
@@ -50,7 +66,7 @@ describe("Testing the login service",() =>{
         })
         .expect(400)
     })
-    test.skip('POST api/login rejects non-string entry for username and password ',() =>{
+    test.skip('POST /api/login rejects non-string entry for username and password ',() =>{
         return request(app).post("/api/login")
         .send({
             username : 4,
@@ -59,7 +75,7 @@ describe("Testing the login service",() =>{
         })
         .expect(500)
     })
-    test.skip('POST api/login rejects correct username and wrong password (testing hashing function has been integrated correctly) ',() =>{
+    test.skip('POST /api/login rejects correct username and wrong password (testing hashing function has been integrated correctly) ',() =>{
         return request(app).post("/api/login")
         .send({
             username : "ejs",
@@ -72,7 +88,7 @@ describe("Testing the login service",() =>{
 })
 describe("Testing the sign up service",() =>{
 
-    test.skip('POST api/login rejects empty fields ',() =>{
+    test.skip('POST /api/login rejects empty fields ',() =>{
         return request(app).post("/api/signUp")
         .send({
             firstName : "",
@@ -87,7 +103,7 @@ describe("Testing the sign up service",() =>{
     });
     
  
-    test.skip('POST api/login rejects non-string entry for username and password ',() =>{
+    test.skip('POST /api/login rejects non-string entry for username and password ',() =>{
         return request(app).post("/api/signUp")
         .send({
             firstName : 5,
@@ -102,6 +118,36 @@ describe("Testing the sign up service",() =>{
     })
 
 
+})
+/*
+|Field | Data Type |
+|------|-----------|
+|name | string|
+|cost | number |
+|dateAdded | Date |
+|description | string |
+|userId | number |
+|recurring | boolean |
+|recurringFreq| number |
+
+*/
+describe("testing the add expenses and add income services",() =>{
+    test('POST /api/login rejects empty fields ',() =>{
+        return request(app).post("/api/addExpense")
+        .set({token : authToken})
+        .send({
+            name : "jest expense",
+            cost : "10000",
+            dateAdded: new Date(2026, 3, 30, 15, 45, 30),
+            userId : testUserId,
+            description : "jest expense description",
+            recurring: false,
+            recurringFreq : -1
+
+            
+        })
+        .expect(200)
+    });
 })
 
 

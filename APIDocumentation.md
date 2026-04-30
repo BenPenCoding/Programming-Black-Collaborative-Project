@@ -56,7 +56,7 @@ Authentication is not required for:
 
 
 ### Log in 
-Description - checks to see if the username and password are in the remote database, and if an account is found then an authentication token is generated. Otherwise an error message is sent, detailing the issue with the request or server.
+Description - checks to see if the username and password are in the remote database, and if an account is found then an authentication token is generated and userId is sent. Otherwise an error message is sent, detailing the issue with the request or server.
 
 Endpoint = "/api/login"
 
@@ -82,7 +82,7 @@ both username and password cannot be empty otherwise a status 400 code will be s
 
 ### Sign up
 
-Description - Attempts to successfully add a user to the database. If successful, then an authentication token is generated. If unsuccessful an error message will be sent detailing the issue with the request.
+Description - Attempts to successfully add a user to the database. If successful, then an authentication token is generated and user id. If unsuccessful an error message will be sent detailing the issue with the request.
 
 Endpoint = "/api/signUp"
 
@@ -416,7 +416,8 @@ Example successful Response
 ##### Example successful and Unsuccesful Responses for Sign up and Log in 
 ```
 {
-    "token" : "9c44f7a6a7079bb85bf46a4496ae7b4ad095f7c3fce312cad82c57c4bd574769e4829872961c6ece74e34729bdacfb0752ef229bc3e23327dbcc76d643b1242b"
+    "token" : "9c44f7a6a7079bb85bf46a4496ae7b4ad095f7c3fce312cad82c57c4bd574769e4829872961c6ece74e34729bdacfb0752ef229bc3e23327dbcc76d643b1242b",
+    "userId" : 2
 }
 
 Example Unsuccessful Response = 

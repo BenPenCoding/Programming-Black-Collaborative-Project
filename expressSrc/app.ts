@@ -75,7 +75,9 @@ app.post('/api/login', async (req , res, next ) => {
         const token = crypto.randomBytes(16).toString('hex');
         
         tokenDictionary[token] = cachedUser
-        return res.status(200).json({token})
+        const userId = cachedUser.getUserId()
+
+        return res.status(200).json({token,userId})
 
 
     }
@@ -103,7 +105,8 @@ app.post('/api/signUp', async (req,res,next) => {
         const token = crypto.randomBytes(16).toString('hex');
         
         tokenDictionary[token] = newUser
-        return res.status(200).json({token})
+        const userId = newUser.getUserId()
+        return res.status(200).json({token,userId})
 
         
         
