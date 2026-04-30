@@ -66,7 +66,7 @@ For two weeks, I was unable to access AWS services. This started when I tried to
 
 In a rash decision I tried to start over and make a new account, however because my bank details were attached to the 'locked' account I was not able to create a new one (none of my family trusted me handling an AWS account with their bank detais). So, with no options left and as the project deadline got closer I decided to look further into the issue and realised the verification emails were going elsewhere! As part of MFA (multi-factor authentication) I had multiple emails attached to the AWS account and all of the missed emails were being sent to an account I no longer properly use, apart from for MFA purposes. 
 
-Embarrassed and a week behind, I knew I had to make progress quick! Before I could steam ahead however, I looked into Amazon Web Services' MFA guidelines:
+Embarrassed and a week behind, I knew I had to make progress quick! So I logged in to AWS and began looking into using Amazon's Amplify for the frontend. Before I could steam ahead however, I looked into Amazon Web Services' MFA guidelines:
 
 &nbsp;
 
@@ -76,9 +76,59 @@ Embarrassed and a week behind, I knew I had to make progress quick! Before I cou
 
 Having learned this important information I was able to finally deploy our app. 
 
+## Entry 4 - Deploying our app
 
+By opening the Amplify console, progress became very smooth. Amazon has made their services essentially foolproof so that anyone can use them. In order to deploy our app, all I had to do was follow these steps:
 
+> Connect Amplify to the GitHub repository, choose a branch, configure build settings, and finally, deploy.
 
+After completing the first two steps I was able to set my build settings:
+
+&nbsp;
+
+![Deploy settings](DeploySettings.png)
+
+As you can see, I set a username and password. AWS is notorious for charging huge amounts if a service is used too much, as I mentioned in my first entry. This way, only people I trust with the credentials can use the frontend.
+
+Once I had finished, I finally pressed deploy and was met with this screen:
+
+&nbsp;
+
+![Before deploying](MidDeploy.png)
+
+And just when my hopes were up... 
+
+&nbsp;
+
+![Failed deploy](FailedDeploy.png)
+
+I had hit the next roadblock, but I wasn't going to let this stop me. Turns out, Amplify was using the backend package.json instead of the frontend one. After a very quick fix where I specified the path to the correct package.json I had a successful deploy:
+
+&nbsp;
+
+![Successful deploy](SuccessfulDeploy.png)
+
+Now I had to figure out the backend. I've previously mentioned using Lambda, however since the backend was created as an Express server this would not be easy. After some research, I found that my best option was to use a service called Elastic Beanstalk. It works well because it handles other services such as EC2 for the user. It specialises in full stack applications but will work just nicely for me.
+
+Because of how strong and easy to use this service is, it costs a lot more than other similar services. Over the span of about 12 hours, it used £0.23 of the free credits I was issued. 
+
+Following a set of steps somewhat resembling those of the Amplify process:
+
+> Upload a zip file of the compiled backend server to Beanstalk, configure build settings, create service roles, and finally, deploy.
+
+Service roles were a new concept to me. Google described them as 'roles assumed by AWS services that perform actions on your behalf, such as accessing resources, managing infrastructure, or creating logs'. Although the service roles screen rather confused me:
+
+&nbsp;
+
+![Service roles](ServiceRoles.png)
+
+After a while I had figured it out and could move onto deploying the backend of our app:
+
+&nbsp;
+
+![Beanstalk deploying](BeanstalkDeploying.png)
+
+This was soon finished... and the build was successful! At this point I had both the frontend and the backend successfully deployed using AWS hosting. I even got to choose a domain! 
 
 
 
