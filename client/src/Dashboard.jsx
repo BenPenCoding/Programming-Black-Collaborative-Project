@@ -11,6 +11,7 @@ function Dashboard() {
   const [incomes, setIncomes] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId")
 
   const totalIncome = incomes.reduce((sum, i) => sum + Number(i.earning || 0), 0);
   const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.cost || 0), 0);
@@ -21,13 +22,13 @@ function Dashboard() {
     try {
       const incomeRes = await fetch("/api/getUsersIncomes", {
         headers: {
-          "Authorization": `Bearer ${token}`
+          "token" : token
         }
       });
 
       const expenseRes = await fetch("/api/getUsersExpenses", {
         headers: {
-          "Authorization": `Bearer ${token}`
+          "token" : token
         }
       });
 
@@ -53,16 +54,34 @@ function Dashboard() {
         setErrorIncome("Please fill in all fields");
         return;
       }
+/*
+|Field | Data Type |
+|------|-----------|
+|name | string|
+|earning | number |
+|userId | number |
+|dateAdded | Date |
+|description | string |
+|recurring | boolean |
+|recurringFreq| number |
 
-      const response = await fetch("/api/newincome", {
+
+*/
+      const response = await fetch("/api/addIncome", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          "token" : token
         },
         body: JSON.stringify({
-          incomeamount,
-          incomeref
+          earning : incomeamount,
+          name : incomeref,
+          userId,
+          dateAdded : new Date(2026, 3, 30, 15, 45, 30),
+          description : incomrRef,
+          recurring : false,
+          recurringFreq : -1
+
         })
     });
 
@@ -75,7 +94,8 @@ function Dashboard() {
 
         const updated = await fetch("/api/getUsersIncomes", {
           headers: {
-            "Authorization": `Bearer ${token}`
+            
+            "token" : token 
           }
         });
         const data = await updated.json();
@@ -100,15 +120,21 @@ function Dashboard() {
         return;
       }
 
-      const response = await fetch("/api/newexpense", {
+      const response = await fetch("/api/addExpense", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          "token" : token
         },
         body: JSON.stringify({
-          expenseamount,
-          expenseref
+          income : incomeamount,
+          name : incomeref,
+          userId,
+          dateAdded : new Date(2026, 3, 30, 15, 45, 30),
+          description : incomrRef,
+          recurring : false,
+          recurringFreq : -1
+
         })
     });
 
@@ -121,7 +147,7 @@ function Dashboard() {
         
         const updated = await fetch("/api/getUsersExpenses", {
           headers: {
-            "Authorization": `Bearer ${token}`
+            token
           }
         });
         const data = await updated.json();
