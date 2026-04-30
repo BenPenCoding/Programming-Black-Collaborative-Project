@@ -5,8 +5,8 @@ function SignUp() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [firstname, setFirstname] = useState("");
-  const [surname, setSurname] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ function SignUp() {
     event.preventDefault();
     
     try {
-      if (!username || !password || !email || !firstname || !surname) {
+      if (!username || !password || !email || !firstName || !lastName) {
         setError("Please fill in all fields");
         return;
       }
@@ -29,8 +29,8 @@ function SignUp() {
           username,
           password,
           email,
-          firstname,
-          surname
+          firstName,
+          lastName
         })
     });
 
@@ -53,8 +53,8 @@ function SignUp() {
         <h1 className="my-3">Sign Up</h1>
         
         <form onSubmit={handleSignUp}>
-          <Firstname firstname={firstname} setFirstname={setFirstname} />
-          <Surname surname={surname} setSurname={setSurname} />
+          <Firstname firstName={firstName} setFirstName={setFirstName} />
+          <lastName lastName={lastName} setLastName={setLastName} />
           <Email email={email} setEmail={setEmail} />
           <Username username={username} setUsername={setUsername} />
           <Password password={password} setPassword={setPassword} />
@@ -68,20 +68,20 @@ function SignUp() {
   );
 }
 
-function Firstname({firstname, setFirstname}) {
+function Firstname({firstName, setFirstName}) {
   return (
     <div className="form-group my-2 text-start">
-        <label htmlFor="firstname" className="form-label">First Name:</label>
-        <input type="text" className="form-control" id="firstname" placeholder="Enter First Name" value={firstname} onChange={(event) => setFirstname(event.target.value)} />
+        <label htmlFor="firstName" className="form-label">First Name:</label>
+        <input type="text" className="form-control" id="firstName" placeholder="Enter First Name" value={firstName} onChange={(event) => setFirstName(event.target.value)} />
     </div>
   );
 }
 
-function Surname({surname, setSurname}) {
+function LastName({lastName, setLastName}) {
   return (
     <div className="form-group my-2 text-start">
-        <label htmlFor="surname" className="form-label">Surname:</label>
-        <input type="text" className="form-control" id="surname" placeholder="Enter Surname" value={surname} onChange={(event) => setSurname(event.target.value)} />
+        <label htmlFor="lastName" className="form-label">Last Name:</label>
+        <input type="text" className="form-control" id="lastName" placeholder="Enter Last Name" value={lastName} onChange={(event) => setLastName(event.target.value)} />
     </div>
   );
 }
