@@ -17,18 +17,33 @@ const app_2 = require("./app");
 const supertest_1 = __importDefault(require("supertest"));
 let authToken;
 let testUserId;
-beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
+/*
+beforeAll(async () => {
     // create user
-    const signUpResponse = yield (0, supertest_1.default)(app_1.default)
+    const signUpResponse = await request(app)
         .post("/api/signUp")
         .send({
-        firstName: "Test",
-        lastName: "User",
+            firstName: "Test",
+            lastName: "User",
+            username: "jestUser",
+            email: "jestUser@durham.ac.uk",
+            password: "DBPass123"
+        });
+
+    
+    authToken = signUpResponse.body.token;
+});
+*/
+beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
+    // create user
+    const loginResponse = yield (0, supertest_1.default)(app_1.default)
+        .post("/api/login")
+        .send({
         username: "jestUser",
-        email: "jestUser@durham.ac.uk",
         password: "DBPass123"
     });
-    authToken = signUpResponse.body.token;
+    authToken = loginResponse.body.token;
+    testUserId = loginResponse.body.userId;
 }));
 describe("Testing non-route functions", () => {
     test.skip("Testing hashing function", () => {
@@ -37,7 +52,7 @@ describe("Testing non-route functions", () => {
     });
 });
 describe("Testing the login service", () => {
-    test.skip('POST api/login succeeds with correct username and password', () => {
+    test.skip('POST /api/login succeeds with correct username and password', () => {
         return (0, supertest_1.default)(app_1.default)
             .post("/api/login")
             .send({
@@ -46,7 +61,7 @@ describe("Testing the login service", () => {
         })
             .expect(200);
     });
-    test.skip('POST api/login rejects empty username and password ', () => {
+    test.skip('POST /api/login rejects empty username and password ', () => {
         return (0, supertest_1.default)(app_1.default).post("/api/login")
             .send({
             username: "",
@@ -54,7 +69,7 @@ describe("Testing the login service", () => {
         })
             .expect(400);
     });
-    test.skip('POST api/login rejects non-string entry for username and password ', () => {
+    test.skip('POST /api/login rejects non-string entry for username and password ', () => {
         return (0, supertest_1.default)(app_1.default).post("/api/login")
             .send({
             username: 4,
@@ -62,7 +77,7 @@ describe("Testing the login service", () => {
         })
             .expect(500);
     });
-    test.skip('POST api/login rejects correct username and wrong password (testing hashing function has been integrated correctly) ', () => {
+    test.skip('POST /api/login rejects correct username and wrong password (testing hashing function has been integrated correctly) ', () => {
         return (0, supertest_1.default)(app_1.default).post("/api/login")
             .send({
             username: "ejs",
@@ -72,7 +87,7 @@ describe("Testing the login service", () => {
     });
 });
 describe("Testing the sign up service", () => {
-    test.skip('POST api/login rejects empty fields ', () => {
+    test.skip('POST /api/login rejects empty fields ', () => {
         return (0, supertest_1.default)(app_1.default).post("/api/signUp")
             .send({
             firstName: "",
@@ -83,7 +98,7 @@ describe("Testing the sign up service", () => {
         })
             .expect(400);
     });
-    test.skip('POST api/login rejects non-string entry for username and password ', () => {
+    test.skip('POST /api/login rejects non-string entry for username and password ', () => {
         return (0, supertest_1.default)(app_1.default).post("/api/signUp")
             .send({
             firstName: 5,
@@ -95,22 +110,116 @@ describe("Testing the sign up service", () => {
             .expect(500);
     });
 });
-//////////////////////////////////////////////////////////////////////////////////
-describe("Testing the get Users Expense service", () => {
-    // Had to hard code an auth token as cached system does not work with server not being run
-    test.skip('POST api/getUsersExpenses succeeds with correct token and returns expenses', () => {
-        return (0, supertest_1.default)(app_1.default)
-            .get("/api/getUsersExpenses")
-            .set("token", authToken)
+describe("testing the add expenses and add income services", () => {
+    test.skip('POST /api/addExpense works  ', () => {
+        return (0, supertest_1.default)(app_1.default).post("/api/addExpense")
+            .set({ token: authToken })
+            .send({
+            name: "jest expense",
+            cost: "10000",
+            dateAdded: new Date(2026, 3, 30, 15, 45, 30),
+            userId: testUserId,
+            description: "jest expense description",
+            recurring: false,
+            recurringFreq: -1
+        })
+            .expect(200);
+    });
+    test.skip('POST /api/addIncome works  ', () => {
+        return (0, supertest_1.default)(app_1.default).post("/api/addIncome")
+            .set({ token: authToken })
+            .send({
+            name: "jest income",
+            earning: "10000",
+            dateAdded: new Date(2026, 3, 30, 15, 45, 30),
+            userId: testUserId,
+            description: "jest income description",
+            recurring: false,
+            recurringFreq: -1
+        })
             .expect(200);
     });
 });
-describe("Testing the get Users income service", () => {
-    // Had to hard code an auth token as cached system does not work with server not being run
-    test.skip('POST api/getUsersIncomes succeeds with correct token and returns expenses', () => {
-        return (0, supertest_1.default)(app_1.default)
-            .get("/api/getUsersExpenses")
-            .set("token", authToken)
+//////////////////////////////////////////////////////////////////////////////////
+/*
+
+*/
+describe("testing get users methods", () => {
+    test.skip("get users expense", () => {
+        return (0, supertest_1.default)(app_1.default).get("/api/getUsersExpenses")
+            .set({ token: authToken })
             .expect(200);
+    });
+    test.skip("get users expense", () => {
+        return (0, supertest_1.default)(app_1.default).get("/api/getUsersIncomes")
+            .set({ token: authToken })
+            .expect(200);
+    });
+});
+///////////////////////////////////////////////////////////////////////////////////
+describe("Testing the update services", () => {
+    test.skip('POST /api/updateExpense ', () => {
+        return (0, supertest_1.default)(app_1.default).post("/api/updateExpense")
+            .set({ token: authToken })
+            .send({
+            name: "jest expense",
+            cost: "10000",
+            dateAdded: new Date(2026, 3, 30, 15, 45, 30),
+            userId: testUserId,
+            description: "jest expense description updated",
+            id: 3,
+            recurring: false,
+            recurringFreq: -1
+        })
+            .expect(200);
+    });
+    test.skip('POST /api/updateIncome ', () => {
+        return (0, supertest_1.default)(app_1.default).post("/api/updateIncome")
+            .set({ token: authToken })
+            .send({
+            name: "jest income",
+            earning: "10000",
+            dateAdded: new Date(2026, 3, 30, 15, 45, 30),
+            userId: testUserId,
+            description: "jest income description updated",
+            id: 3,
+            recurring: false,
+            recurringFreq: -1
+        })
+            .expect(200);
+    });
+});
+/////////////////////////////////////////////////////////////////////////////////
+/*
+
+|Field | Data Type |
+|------| ----------|
+|userId | number |
+| expenseId | number |
+
+*/
+describe("Testing the deleter services", () => {
+    test.skip("Delete /api/deleteExpense", () => {
+        return (0, supertest_1.default)(app_1.default).delete("/api/deleteExpense")
+            .set({ token: authToken })
+            .send({
+            userId: testUserId,
+            expenseId: 3
+        });
+    });
+    test.skip("Delete /api/deleteIncomes", () => {
+        return (0, supertest_1.default)(app_1.default).delete("/api/deleteIncome")
+            .set({ token: authToken })
+            .send({
+            userId: testUserId,
+            expenseId: 3
+        });
+    });
+    test.skip("Delete /api/deleteUser", () => {
+        return (0, supertest_1.default)(app_1.default).delete("/api/deleteUser")
+            .set({ token: authToken })
+            .send({
+            userId: testUserId,
+        });
     });
 });

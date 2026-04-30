@@ -55,7 +55,7 @@ const ClassDefinitions_1 = require("./ClassDefinitions");
 // Initialize the express engine
 // might have to wrap parse request in try catches
 const app = (0, express_1.default)();
-app.use(express_1.default.static('./../../client'));
+app.use(express_1.default.static('./client'));
 function hashPassword(password) {
     // Generate a random salt (16 bytes)
     const salt = crypto.randomBytes(16).toString('hex');
@@ -93,7 +93,8 @@ app.post('/api/login', (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         // create an auth token
         const token = crypto.randomBytes(16).toString('hex');
         tokenDictionary[token] = cachedUser;
-        return res.status(200).json({ token });
+        const userId = cachedUser.getUserId();
+        return res.status(200).json({ token, userId });
     }
     catch (error) {
         next(error);
@@ -110,7 +111,8 @@ app.post('/api/signUp', (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         yield dbAPI.AddUser(newUser); // userID updated  via return statement
         const token = crypto.randomBytes(16).toString('hex');
         tokenDictionary[token] = newUser;
-        return res.status(200).json({ token });
+        const userId = newUser.getUserId();
+        return res.status(200).json({ token, userId });
     }
     catch (error) {
         next(error);
@@ -118,6 +120,7 @@ app.post('/api/signUp', (req, res, next) => __awaiter(void 0, void 0, void 0, fu
 }));
 app.post('/api/updateExpense', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        req.body.dateAdded = new Date(req.body.dateAdded);
         const { expensesName, cost, dateAdded, description, userId, id, recurring, recurringFreq } = req.body;
         const token = req.headers.token;
         if (!(token in tokenDictionary)) {
@@ -159,6 +162,7 @@ app.post('/api/updateExpense', (req, res, next) => __awaiter(void 0, void 0, voi
 app.post('/api/updateIncome', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // write in api doc this order
+        req.body.dateAdded = new Date(req.body.dateAdded);
         const { incomeName, earning, userId, id, dateAdded, description, recurring, recurringFreq } = req.body;
         const token = req.headers.token;
         if (!(token in tokenDictionary)) {
@@ -199,6 +203,7 @@ app.post('/api/updateIncome', (req, res, next) => __awaiter(void 0, void 0, void
 }));
 app.post("/api/addExpense", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        req.body.dateAdded = new Date(req.body.dateAdded);
         const token = req.headers.token;
         if (!(token in tokenDictionary)) {
             return res.status(401).json({ error: "Unauthorised Access" });
@@ -217,6 +222,7 @@ app.post("/api/addExpense", (req, res, next) => __awaiter(void 0, void 0, void 0
 }));
 app.post("/api/addIncome", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        req.body.dateAdded = new Date(req.body.dateAdded);
         const token = req.headers.token;
         if (!(token in tokenDictionary)) {
             return res.status(401).json({ error: "Unauthorised Access" });

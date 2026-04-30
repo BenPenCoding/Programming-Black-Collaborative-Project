@@ -119,20 +119,9 @@ describe("Testing the sign up service",() =>{
 
 
 })
-/*
-|Field | Data Type |
-|------|-----------|
-|name | string|
-|cost | number |
-|dateAdded | Date |
-|description | string |
-|userId | number |
-|recurring | boolean |
-|recurringFreq| number |
 
-*/
 describe("testing the add expenses and add income services",() =>{
-    test('POST /api/login rejects empty fields ',() =>{
+    test.skip('POST /api/addExpense works  ',() =>{
         return request(app).post("/api/addExpense")
         .set({token : authToken})
         .send({
@@ -148,38 +137,128 @@ describe("testing the add expenses and add income services",() =>{
         })
         .expect(200)
     });
+
+    test.skip('POST /api/addIncome works  ',() =>{
+        return request(app).post("/api/addIncome")
+        .set({token : authToken})
+        .send({
+            name : "jest income",
+            earning : "10000",
+            dateAdded: new Date(2026, 3, 30, 15, 45, 30),
+            userId : testUserId,
+            description : "jest income description",
+            recurring: false,
+            recurringFreq : -1
+
+            
+        })
+        .expect(200)
+    });
 })
 
 
 
 //////////////////////////////////////////////////////////////////////////////////
 
+/*
 
+*/
 
-
-describe("Testing the get Users Expense service",() =>{
-
-    // Had to hard code an auth token as cached system does not work with server not being run
-    
-    test.skip('POST api/getUsersExpenses succeeds with correct token and returns expenses', () => {
-        return request(app)
-        .get("/api/getUsersExpenses")
-        .set("token", authToken)
+describe("testing get users methods",() => {
+    test.skip("get users expense",() => {
+         return request(app).get("/api/getUsersExpenses")
+        .set({token : authToken})
         .expect(200)
-        
+    })
+     test.skip("get users expense",() => {
+         return request(app).get("/api/getUsersIncomes")
+        .set({token : authToken})
+        .expect(200)
+    })
+
+});
+
+
+
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////
+describe("Testing the update services",() => {
+    test.skip('POST /api/updateExpense ',() =>{
+        return request(app).post("/api/updateExpense")
+        .set({token : authToken})
+        .send({
+            name : "jest expense",
+            cost : "10000",
+            dateAdded: new Date(2026, 3, 30, 15, 45, 30),
+            userId : testUserId,
+            description : "jest expense description updated",
+            id : 3,
+            recurring: false,
+            recurringFreq : -1
+
+            
+        })
+        .expect(200)
     });
-    
+
+     test.skip('POST /api/updateIncome ',() =>{
+        return request(app).post("/api/updateIncome")
+        .set({token : authToken})
+        .send({
+            name : "jest income",
+            earning : "10000",
+            dateAdded: new Date(2026, 3, 30, 15, 45, 30),
+            userId : testUserId,
+            description : "jest income description updated",
+            id : 3,
+            recurring: false,
+            recurringFreq : -1
+
+            
+        })
+        .expect(200)
+    });
 })
-describe("Testing the get Users income service",() =>{
 
-    // Had to hard code an auth token as cached system does not work with server not being run
-    
-    test.skip('POST api/getUsersIncomes succeeds with correct token and returns expenses', () => {
-        return request(app)
-        .get("/api/getUsersExpenses")
-        .set("token", authToken)
-        .expect(200)
-        
-    });
-    
+
+
+/////////////////////////////////////////////////////////////////////////////////
+/*
+
+|Field | Data Type |
+|------| ----------|
+|userId | number |
+| expenseId | number |
+
+*/
+
+describe("Testing the deleter services",() =>  {
+    test.skip("Delete /api/deleteExpense", () => {
+        return request(app).delete("/api/deleteExpense")
+        .set({token : authToken})
+        .send({
+            userId:testUserId,
+            expenseId : 3
+        })
+    })
+     test.skip("Delete /api/deleteIncomes", () => {
+        return request(app).delete("/api/deleteIncome")
+        .set({token : authToken})
+        .send({
+            userId:testUserId,
+            expenseId : 3
+        })
+    })
+    test.skip("Delete /api/deleteUser", () => {
+        return request(app).delete("/api/deleteUser")
+        .set({token : authToken})
+        .send({
+            userId:testUserId,
+            
+        })
+    })
 })
