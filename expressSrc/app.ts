@@ -119,6 +119,8 @@ app.post('/api/signUp', async (req,res,next) => {
 app.post('/api/updateExpense',async (req,res,next) => {
     try{
 
+        req.body.dateAdded = new Date(req.body.dateAdded); 
+
         const {expensesName,cost,dateAdded,description,userId,id,recurring,recurringFreq} = req.body
         const token  = req.headers.token as string
         if(!(token in tokenDictionary)){
@@ -169,6 +171,7 @@ app.post('/api/updateExpense',async (req,res,next) => {
 app.post('/api/updateIncome',async (req,res,next) => {
     try{
         // write in api doc this order
+        req.body.dateAdded = new Date(req.body.dateAdded); 
 
         const {incomeName,earning,userId,id,dateAdded,description,recurring,recurringFreq} = req.body
 
@@ -218,6 +221,9 @@ app.post('/api/updateIncome',async (req,res,next) => {
 
 app.post("/api/addExpense", async (req,res,next) => {
     try{
+
+        req.body.dateAdded = new Date(req.body.dateAdded); 
+
         const token = req.headers.token as string
         if(!(token in tokenDictionary)){
             return res.status(401).json({error : "Unauthorised Access"})
@@ -243,6 +249,8 @@ app.post("/api/addExpense", async (req,res,next) => {
 
 app.post("/api/addIncome", async (req,res ,next) =>{
     try{
+        req.body.dateAdded = new Date(req.body.dateAdded); 
+
         const token = req.headers.token as string
         if(!(token in tokenDictionary)){
             return res.status(401).json({error : "Unauthorised Access"})
